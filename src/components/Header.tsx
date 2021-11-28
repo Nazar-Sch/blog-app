@@ -2,6 +2,8 @@ import React from 'react';
 import { Button, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
+import { HeaderProps } from '../types/initialTypes';
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'flex',
@@ -14,10 +16,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }));
-
-interface HeaderProps {
-  handleShowPopup: () => void;
-}
 
 export const Header: React.FC<HeaderProps> = ({ handleShowPopup }) => {
   const classes = useStyles();

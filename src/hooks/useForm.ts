@@ -19,9 +19,7 @@ type Validations<T extends {}> = Partial<Record<keyof T, Validation>>;
 
 type ErrorRecord<T> = Partial<Record<keyof T, string>>;
 
-export const useFormCustom = <
-  T extends Record<keyof T, any> = {}
->(options?: {
+export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
   validations?: Validations<T>;
   initialValues?: Partial<T>;
   onSubmit?: () => void;
@@ -81,6 +79,9 @@ export const useFormCustom = <
 
     if (options?.onSubmit) {
       options.onSubmit();
+      if (options?.initialValues) {
+        setValues({ ...values, ...options.initialValues });
+      }
     }
   };
 

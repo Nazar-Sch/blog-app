@@ -1,14 +1,12 @@
-import React, { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material';
 
 import { theme } from './styles/theme';
-import { NewArticle } from './templates/NewArticle';
-import { Header } from './templates/NewArticle/Header';
-import { useFormCustom } from './hooks/useForm';
-import { Article } from './types';
-import { validationShcema } from './validationSchema';
-import { Articles } from './templates/NewArticle/Articles';
+import { NewArticle } from './components/NewArticle';
+import { Header } from './components/Header';
+import { Article } from './types/initialTypes';
+import { Articles } from './components/Articles';
 import { mockedArticles } from './mockedArticles';
 
 export const App: React.FC = () => {

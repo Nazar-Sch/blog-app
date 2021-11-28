@@ -1,5 +1,5 @@
-export const validationShcema = {
-  nickname: {
+export const newArticleValidationSchema = {
+  title: {
     required: {
       value: true,
       message: 'This field is required!',
@@ -9,14 +9,10 @@ export const validationShcema = {
       message: "You're not allowed to use special characters!",
     },
   },
-  short_description: {
+  content: {
     required: {
       value: true,
       message: 'This field is required!',
-    },
-    pattern: {
-      value: '^[A-Za-z]*$',
-      message: "You're not allowed to use special characters!",
     },
   },
 };
