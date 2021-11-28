@@ -4,10 +4,6 @@ export const newArticleValidationSchema = {
       value: true,
       message: 'This field is required!',
     },
-    pattern: {
-      value: '^[A-Za-z]*$',
-      message: "You're not allowed to use special characters!",
-    },
   },
   content: {
     required: {
