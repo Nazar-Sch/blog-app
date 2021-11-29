@@ -23,6 +23,7 @@
     "eject": "react-scripts eject",
     "format:code": "prettier --write ."
   },
+  "proxy": "http://localhost:5000",
   "eslintConfig": {
     "extends": [
       "react-app",
