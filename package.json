@@ -19,5 +19,8 @@
     "concurrently": "^6.4.0",
     "config": "^3.3.6",
     "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
