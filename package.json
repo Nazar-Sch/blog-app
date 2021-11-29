@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "React",
+    "NodeJS"
+  ],
+  "author": "Nazar Shtypka <nazar.schtypka@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^6.4.0",
+    "config": "^3.3.6",
+    "nodemon": "^2.0.15"
+  }
+}
