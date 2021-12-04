@@ -5,15 +5,11 @@ export interface Article {
 }
 
 export interface ArticlesProps {
-  articles: Article[];
+  article: Article;
 }
 
 export interface NewArticleProps {
   openPopup: boolean;
   handleClosePopup: () => void;
   handleChangeArticle: (article: Article) => void;
-}
-
-export interface HeaderProps {
-  handleShowPopup: () => void;
 }
