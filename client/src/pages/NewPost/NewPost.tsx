@@ -1,61 +1,10 @@
-import { Button, TextField, Theme } from '@mui/material';
-import { makeStyles, styled } from '@mui/styles';
-import moment from 'moment';
 import React from 'react';
+import { Button } from '@mui/material';
+import moment from 'moment';
 import { useForm } from '../../hooks/useForm';
-import { Article, NewArticleProps } from '../../types/initialTypes';
+import { Article } from '../../types/initialTypes';
 import { newArticleValidationSchema } from '../../validationSchema';
-
-const TitleTextField = styled(TextField)({
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      border: 'none',
-    },
-    '& .MuiInputBase-input': {
-      fontSize: 38,
-    },
-  },
-});
-
-const StoryTextField = styled(TextField)({
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      border: 'none',
-    },
-    '& .MuiInputBase-input': {
-      fontSize: 26,
-    },
-  },
-});
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'grid',
-    marginTop: theme.spacing(2),
-    '& .MuiButton-outlined': {
-      justifySelf: 'center',
-      fontSize: 14,
-      backgroundColor: theme.palette.success.main,
-      color: '#fff',
-      borderRadius: theme.spacing(1.5),
-      padding: theme.spacing(0.5, 1.5),
-      border: 'none',
-      textTransform: 'none',
-      '&:hover': {
-        backgroundColor: theme.palette.success.main,
-        border: 'none',
-        boxShadow: 'none',
-      },
-      '&:active': {
-        boxShadow: 'none',
-        backgroundColor: theme.palette.success.main,
-      },
-      '&:focus': {
-        boxShadow: 'none',
-      },
-    },
-  },
-}));
+import { useStyles, TitleTextField, StoryTextField } from './styles';
 
 export const NewPost: React.FC = () => {
   const initialValues = { title: '', content: '' };
@@ -79,7 +28,7 @@ export const NewPost: React.FC = () => {
   }
 
   return (
-    <form className={classes.root}>
+    <form className={classes.root} onSubmit={handleSubmit}>
       <TitleTextField
         name='title'
         value={title}
@@ -91,7 +40,6 @@ export const NewPost: React.FC = () => {
       />
       <StoryTextField
         multiline
-        rows={5}
         name='content'
         value={content}
         onChange={handleChange('content')}
