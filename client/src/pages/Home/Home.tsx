@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { makeStyles } from '@mui/styles';
+
 import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
-import { mockedArticles } from '../../mockedArticles';
 import { Article } from '../../types/initialTypes';
+import { getAllPosts } from '../../api/posts';
 
 const useStyles = makeStyles({
   root: {
@@ -18,13 +18,14 @@ const useStyles = makeStyles({
 });
 
 export const Home = () => {
-  const [articles, setArticles] = useState<Article[]>(mockedArticles);
+  const [articles, setArticles] = useState<Article[]>([]);
+
   const classes = useStyles();
 
   useEffect((() => {
     (async () => {
       try {
-        const { data } = await axios.get('/api/posts');
+        const { data } = await getAllPosts();
         setArticles(data.posts);
       } catch (e) {
         console.log(e);

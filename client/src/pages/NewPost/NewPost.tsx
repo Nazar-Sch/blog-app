@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import axios from 'axios';
 import { useForm } from '../../hooks/useForm';
 import { Article } from '../../types/initialTypes';
 import { newArticleValidationSchema } from '../../validationSchema';
 import { useStyles, TitleTextField, StoryTextField } from './styles';
+import { addNewPost } from '../../api/posts';
 
 export const NewPost: React.FC = () => {
   const initialValues = { title: '', content: '' };
@@ -18,12 +18,8 @@ export const NewPost: React.FC = () => {
   const { title, content } = values;
 
   async function handleSubmitNewArticle() {
-    const newArticle = {
-      // date: moment().format('LLL'),
-      title,
-      content,
-    };
-    await axios.post('/api/posts/new', newArticle);
+    const newArticle = { title, content };
+    await addNewPost(newArticle);
   }
 
   return (

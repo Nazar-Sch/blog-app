@@ -26,4 +26,13 @@ router.post("/new", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await Posts.findById(req.params.id);
+    res.status(200).json({ post });
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong. Try again." });
+  }
+});
+
 module.exports = router;

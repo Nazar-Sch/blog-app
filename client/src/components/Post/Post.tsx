@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Theme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { Box, Paper, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -44,9 +45,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Post: React.FC<ArticlesProps> = ({ article }) => {
   const classes = useStyles();
-
-  const openArticle = () => {
-    console.log('Go to read article...');
+  const navigate = useNavigate();
+  
+  const openArticle = (id: string) => {
+    navigate(`/post/${id}`);
   };
 
   const clickOnLike = () => {
@@ -68,7 +70,7 @@ export const Post: React.FC<ArticlesProps> = ({ article }) => {
       <Typography variant='caption' className={classes.date}>
         {moment(article.date).format('LLL')}
       </Typography>
-      <Box onClick={openArticle} className={classes.wrapperContent}>
+      <Box onClick={() => openArticle(article._id)} className={classes.wrapperContent}>
         <Typography variant='h4'>{article.title}</Typography>
         <Typography variant='body1' color='secondary'>
           {article.content}
