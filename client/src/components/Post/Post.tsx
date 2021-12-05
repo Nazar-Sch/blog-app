@@ -7,6 +7,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { ArticlesProps } from '../../types/initialTypes';
 import { makeStyles } from '@mui/styles';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme: Theme) => ({
   articleRoot: {
@@ -65,7 +66,7 @@ export const Post: React.FC<ArticlesProps> = ({ article }) => {
         </Typography>
       </Box>
       <Typography variant='caption' className={classes.date}>
-        {article.date}
+        {moment(article.date).format('LLL')}
       </Typography>
       <Box onClick={openArticle} className={classes.wrapperContent}>
         <Typography variant='h4'>{article.title}</Typography>

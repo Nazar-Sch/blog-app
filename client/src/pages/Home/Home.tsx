@@ -32,10 +32,6 @@ export const Home = () => {
     })();
   }), [])
 
-  const handleSubmitNewArticle = (value: Article) => {
-    setArticles(prev => [...prev, value]);
-  };
-
   return (
     <div className={classes.root}>
       <div className={classes.articlesRoot}>

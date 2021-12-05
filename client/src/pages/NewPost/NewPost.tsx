@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import moment from 'moment';
+import axios from 'axios';
 import { useForm } from '../../hooks/useForm';
 import { Article } from '../../types/initialTypes';
 import { newArticleValidationSchema } from '../../validationSchema';
@@ -17,14 +17,13 @@ export const NewPost: React.FC = () => {
 
   const { title, content } = values;
 
-  function handleSubmitNewArticle() {
+  async function handleSubmitNewArticle() {
     const newArticle = {
-      date: moment().format('LLL'),
+      // date: moment().format('LLL'),
       title,
       content,
     };
-    console.log(newArticle);
-    // handleChangeArticle(newArticle);
+    await axios.post('/api/posts/new', newArticle);
   }
 
   return (
