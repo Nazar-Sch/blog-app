@@ -13,11 +13,15 @@ export const App: React.FC = () => {
       <CssBaseline />
       <ThemeProvider theme={theme}>
         <Layout>
-          {routes.map(route => (
-            <Routes>
-              <Route key={route.toString()} path={route.path} element={route.component} />
-            </Routes>
-          ))}
+          <Routes>
+            {routes.map(route => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.component}
+              />
+            ))}
+          </Routes>
         </Layout>
       </ThemeProvider>
     </Router>

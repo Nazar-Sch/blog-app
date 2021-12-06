@@ -1,14 +1,15 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { makeStyles } from '@mui/styles';
+import moment from 'moment';
 import { Theme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { Box, Paper, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+
 import { ArticlesProps } from '../../types/initialTypes';
-import { makeStyles } from '@mui/styles';
-import moment from 'moment';
 
 const useStyles = makeStyles((theme: Theme) => ({
   articleRoot: {
@@ -32,6 +33,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   wrapperContent: {
     cursor: 'pointer',
     gridArea: 'wrapperContent',
+    textDecoration: 'none',
+    '& .MuiTypography-h4': {
+      color: theme.palette.secondary.dark,
+    },
   },
   date: {
     gridArea: 'date',
@@ -45,11 +50,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Post: React.FC<ArticlesProps> = ({ article }) => {
   const classes = useStyles();
-  const navigate = useNavigate();
-  
-  const openArticle = (id: string) => {
-    navigate(`/post/${id}`);
-  };
+
+  const { date, title, content, _id } = article;
 
   const clickOnLike = () => {
     console.log('Like');
@@ -68,14 +70,14 @@ export const Post: React.FC<ArticlesProps> = ({ article }) => {
         </Typography>
       </Box>
       <Typography variant='caption' className={classes.date}>
-        {moment(article.date).format('LLL')}
+        {moment(date).format('LLL')}
       </Typography>
-      <Box onClick={() => openArticle(article._id)} className={classes.wrapperContent}>
-        <Typography variant='h4'>{article.title}</Typography>
+      <Link to={`/post/${_id}`} className={classes.wrapperContent}>
+        <Typography variant='h4'>{title}</Typography>
         <Typography variant='body1' color='secondary'>
-          {article.content}
+          {content}
         </Typography>
-      </Box>
+      </Link>
       <Box className={classes.btnGroup}>
         <IconButton size='small' onClick={clickOnSave} color='secondary'>
           <BookmarkBorderIcon />
