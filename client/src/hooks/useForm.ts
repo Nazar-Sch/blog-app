@@ -79,9 +79,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
 
     if (options?.onSubmit) {
       options.onSubmit();
-      if (options?.initialValues) {
-        setValues({ ...values, ...options.initialValues });
-      }
+      setValues((options?.initialValues || {}) as T);
     }
   };
 

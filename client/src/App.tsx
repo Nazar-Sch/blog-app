@@ -1,52 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Container, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { theme } from './styles/theme';
-import { NewArticle } from './components/NewArticle';
-import { Article } from './types/initialTypes';
-import { mockedArticles } from './mockedArticles';
-import { Navbar } from './components/Navbar';
-import { Tags } from './components/Tags';
-import { makeStyles } from '@mui/styles';
-import { Post } from './components/Post';
-
-const useStyles = makeStyles({
-  root: {
-    display: 'grid',
-    gridTemplateColumns: '3fr 1fr',
-    position: 'relative',
-  },
-  articlesRoot: {
-    overflowY: 'auto',
-  },
-});
+import { routes } from './layout/routes';
+import { Layout } from './layout/Layout';
 
 export const App: React.FC = () => {
-  const [articles, setArticles] = useState<Article[]>(mockedArticles);
-
-  const classes = useStyles();
-
-  const handleSubmitNewArticle = (value: Article) => {
-    setArticles(prev => [...prev, value]);
-  };
-
   return (
-    <>
+    <Router>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Navbar />
-        <Container>
-          <div className={classes.root}>
-            <div className={classes.articlesRoot}>
-              {articles.map(article => (
-                <Post article={article} />
-              ))}
-            </div>
-            <Tags />
-          </div>
-        </Container>
+        <Layout>
+          <Routes>
+            {routes.map(route => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.component}
+              />
+            ))}
+          </Routes>
+        </Layout>
       </ThemeProvider>
-    </>
+    </Router>
   );
 };

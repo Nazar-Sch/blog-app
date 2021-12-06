@@ -4,7 +4,6 @@ import {
   Box,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   Container,
   Menu,
@@ -13,6 +12,7 @@ import {
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { makeStyles } from '@mui/styles';
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -32,6 +32,15 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
   },
+  link: {
+    marginRight: theme.spacing(2),
+    textDecoration: 'none',
+    color: theme.palette.secondary.main,
+    fontSize: 14,
+    '&:hover': {
+      color: theme.palette.secondary.dark,
+    }
+  }
 }));
 
 export const Navbar = () => {
@@ -54,8 +63,8 @@ export const Navbar = () => {
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
               MyBlog
             </Typography>
-            <Button color='inherit'>Home</Button>
-            <Button color='inherit'>Write a story</Button>
+            <Link className={classes.link} to='/'>Home</Link>
+            <Link className={classes.link} to='/new-story'>Write a story</Link>
             <IconButton
               size='large'
               aria-label='account of current user'
