@@ -9,4 +9,4 @@ export const getSelectedPost = (id: string) => axios.get(`${API_LINK}/${id}`);
 
 export const addNewPost = (post: CreatedPost) => axios.post(`${API_LINK}/new`, post);
 
-
+export const deletePostByID = (id: string) => axios.delete(`${API_LINK}/delete/${id}`);
