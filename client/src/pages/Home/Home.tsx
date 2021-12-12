@@ -37,7 +37,7 @@ export const Home = () => {
     <div className={classes.root}>
       <div className={classes.articlesRoot}>
         {articles.map(article => (
-          <Post article={article} />
+          <Post key={article._id} article={article} />
         ))}
       </div>
       <Tags />

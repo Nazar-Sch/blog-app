@@ -6,11 +6,12 @@ import moment from 'moment';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
 
-import { Article } from '../../types/initialTypes';
+import { Article, CreatedPost } from '../../types/initialTypes';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { deletePostByID } from '../../api/posts';
+import { deletePostByID, editPost } from '../../api/posts';
+import { PostForm } from '../../components/Forms/PostForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -25,11 +26,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   actionButtons: {
     justifySelf: 'end',
     marginBottom: theme.spacing(2),
-  }
+  },
 }));
 
 export const Post = () => {
   const [post, setPost] = useState<Article | null>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+
   const { id } = useParams();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -43,11 +46,10 @@ export const Post = () => {
         console.log(err);
       }
     })();
-  }, [id]);
+  }, [id, editMode]);
 
   const updatePost = (id: string) => {
-    console.log(`Update post by: ${id}`);
-    // request to server
+    setEditMode(true);
   };
 
   const deletePost = async (id: string) => {
@@ -67,23 +69,37 @@ export const Post = () => {
     );
   }
 
+  const handleChangePost = async (updatedPost: CreatedPost) => {
+    await editPost(post._id, updatedPost);
+    return setEditMode(false);
+  };
+
   return (
     <div className={classes.root}>
-      <div className={classes.actionButtons}>
-        <IconButton onClick={() => updatePost(post._id)}>
-          <EditIcon />
-        </IconButton>
-        <IconButton onClick={() => deletePost(post._id)}>
-          <DeleteOutlineIcon />
-        </IconButton>
-      </div>
-      <div className={classes.heading}>
-        <Typography variant='h4'>{post.title}</Typography>
-        <Typography variant='body2'>
-          {moment(post.date).format('LLL')}
-        </Typography>
-      </div>
-      <Typography variant='body1'>{post.content}</Typography>
+      {editMode ? (
+        <PostForm
+          handleSubmitArticle={handleChangePost}
+          initialValues={{ title: post.title, content: post.content }}
+        />
+      ) : (
+        <>
+          <div className={classes.actionButtons}>
+            <IconButton onClick={() => updatePost(post._id)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => deletePost(post._id)}>
+              <DeleteOutlineIcon />
+            </IconButton>
+          </div>
+          <div className={classes.heading}>
+            <Typography variant='h4'>{post.title}</Typography>
+            <Typography variant='body2'>
+              {moment(post.date).format('LLL')}
+            </Typography>
+          </div>
+          <Typography variant='body1'>{post.content}</Typography>
+        </>
+      )}
     </div>
   );
 };
