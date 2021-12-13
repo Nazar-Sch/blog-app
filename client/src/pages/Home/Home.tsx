@@ -5,6 +5,7 @@ import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
 import { Article } from '../../types/initialTypes';
 import { getAllPosts } from '../../api/posts';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   root: {
@@ -33,10 +34,12 @@ export const Home = () => {
     })();
   }), [])
 
+  const sortedPosts = articles.sort((a, b) => moment(b.date).diff(a.date));
+
   return (
     <div className={classes.root}>
       <div className={classes.articlesRoot}>
-        {articles.map(article => (
+        {sortedPosts.map(article => (
           <Post key={article._id} article={article} />
         ))}
       </div>
