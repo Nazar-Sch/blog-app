@@ -1,12 +1,23 @@
-import axios from "axios";
-import { CreatedPost } from "../types/initialTypes";
+import axios from 'axios';
 
-const API_LINK = 'api/posts';
+import { CreatedPost } from '../types/initialTypes';
 
-export const getAllPosts = () => axios.get(API_LINK);
+const API_LINK = '/api';
+const API = axios.create({ baseURL: API_LINK });
 
-export const getSelectedPost = (id: string) => axios.get(`${API_LINK}/${id}`);
+API.interceptors.request.use(req => {
+  const token = JSON.parse(localStorage.getItem('token') as string);
+  if (token) {
+    // @ts-ignore
+    req.headers['x-access-token'] = token;
+  }
 
-export const addNewPost = (post: CreatedPost) => axios.post(`${API_LINK}/new`, post);
+  return req;
+});
 
+export const getAllPosts = () => API.get('/posts');
 
+export const getSelectedPost = (id: string) => API.get(`/posts/${id}`);
+
+export const addNewPost = (post: CreatedPost) =>
+  API.post('/posts/new', post);

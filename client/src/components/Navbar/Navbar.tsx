@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { makeStyles } from '@mui/styles';
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/useAuth';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -21,7 +22,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingTop: '10px',
       paddingBottom: '10px',
       color: theme.palette.secondary.dark,
-      boxShadow: 'rgb(0 0 0 / 5%) 0px 6px 24px 0px, rgb(0 0 0 / 8%) 0px 0px 0px 1px',
+      boxShadow:
+        'rgb(0 0 0 / 5%) 0px 6px 24px 0px, rgb(0 0 0 / 8%) 0px 0px 0px 1px',
     },
     '& .MuiButton-text': {
       textTransform: 'none',
@@ -39,13 +41,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: 14,
     '&:hover': {
       color: theme.palette.secondary.dark,
-    }
-  }
+    },
+  },
 }));
 
-export const Navbar = () => {
+interface NavbarProps {
+  userName: string | null;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ userName }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { signout } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -53,7 +62,12 @@ export const Navbar = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+    signout(() => navigate('/signin'));
   };
+
+  if (!userName) {
+    return null;
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }} className={classes.root}>
@@ -61,10 +75,14 @@ export const Navbar = () => {
         <Container>
           <Toolbar>
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-              MyBlog
+              {userName}
             </Typography>
-            <Link className={classes.link} to='/'>Home</Link>
-            <Link className={classes.link} to='/new-story'>Write a story</Link>
+            <Link className={classes.link} to='/'>
+              Home
+            </Link>
+            <Link className={classes.link} to='/new-story'>
+              Write a story
+            </Link>
             <IconButton
               size='large'
               aria-label='account of current user'

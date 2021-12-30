@@ -17,5 +17,5 @@ export const routes = [
     path: 'post/:id',
     component: <Post />,
     exact: true,
-  }
+  },
 ]

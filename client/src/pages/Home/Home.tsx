@@ -5,6 +5,7 @@ import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
 import { Article } from '../../types/initialTypes';
 import { getAllPosts } from '../../api/posts';
+import { useAuth } from '../../context/useAuth';
 
 const useStyles = makeStyles({
   root: {

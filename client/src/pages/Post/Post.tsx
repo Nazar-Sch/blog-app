@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import axios from 'axios';
 import moment from 'moment';
 import { useParams } from 'react-router';
 
 import { Article } from '../../types/initialTypes';
+import { getSelectedPost } from '../../api/posts';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -26,7 +26,7 @@ export const Post = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`/api/posts/${id}`);
+        const { data } = await getSelectedPost(id as string);
         setPost(data.post);
       } catch (err) {
         console.log(err);
