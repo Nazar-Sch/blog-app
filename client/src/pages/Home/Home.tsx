@@ -27,7 +27,7 @@ export const Home = () => {
     dispatch(getPosts());
   }), [])
 
-  if (isLoading && posts.length === 0) {
+  if (isLoading) {
     return (
       <p>Loading...</p>
     )
