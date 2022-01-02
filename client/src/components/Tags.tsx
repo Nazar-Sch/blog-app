@@ -4,6 +4,7 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
+    borderLeft: `1px solid ${theme.palette.secondary.light}`,
     marginTop: 25,
     padding: theme.spacing(2),
     '& .MuiChip-root': {

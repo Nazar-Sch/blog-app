@@ -25,6 +25,18 @@ const useStyles = makeStyles((theme: Theme) => ({
       'wrapperContent wrapperContent'
       '. btnGroup'
       `,
+    '& .MuiTypography-body1': {
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 3,
+      '-webkit-box-orient': 'vertical',
+    },
+    '& .MuiTypography-h4': {
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+    },
   },
   name: {
     gridArea: 'name',
