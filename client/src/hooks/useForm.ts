@@ -22,7 +22,7 @@ type ErrorRecord<T> = Partial<Record<keyof T, string>>;
 export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
   validations?: Validations<T>;
   initialValues?: Partial<T>;
-  onSubmit?: () => void;
+  onSubmit?: (values: T) => void;
 }) => {
   const [values, setValues] = useState<T>(
     (options?.initialValues || {}) as T
@@ -78,7 +78,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
     setErrors({});
 
     if (options?.onSubmit) {
-      options.onSubmit();
+      options.onSubmit(values);
       setValues((options?.initialValues || {}) as T);
     }
   };
