@@ -13,14 +13,10 @@ export type SignUpProps = {
 };
 
 export const signInApiCall = (payload: SignInProps) =>
-  API.post(`/user/signin`, payload);
+  API.post('/user/signin', payload);
 
 export const signUpApiCall = (payload: SignUpProps) =>
-  API.post(`/user/signup`, payload);
+  API.post('/user/signup', payload);
 
 export const getUserByIdCall = () =>
-  API.get(`/user/current`);
-
-export const logout = async () => {
-  localStorage.removeItem('token');
-};
+  API.get('/user/current');

@@ -32,7 +32,6 @@ export const Home = () => {
       <p>Loading...</p>
     )
   }
-  console.log(posts);
   return (
     <div className={classes.root}>
       <div className={classes.articlesRoot}>

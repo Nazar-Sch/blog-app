@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+
 import authReducer from './auth/reducer';
 import postsReducer from './posts/reducer';
 

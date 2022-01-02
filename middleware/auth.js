@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
     }
 
     try {
-      const decoded = jwt.verify(token, config.HASH_SECRET_KEY);
+      const decoded = jwt.verify(token, config.SECRET_KEY);
       req.user = decoded;
     } catch (err) {
       return res.status(401).send("Invalid Token");

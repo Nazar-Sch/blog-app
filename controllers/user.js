@@ -26,7 +26,7 @@ const signIn = async (req, res, next) => {
 
     const token = jwt.sign(
       { user_id: user._id.toString(), email },
-      process.env.HASH_SECRET_KEY,
+      process.env.SECRET_KEY,
       {
         expiresIn: "2h",
       }
@@ -56,7 +56,7 @@ const signUp = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ email: email.toLowerCase() });
-    const { HASH_SECRET_KEY } = process.env;
+    const { SECRET_KEY } = process.env;
 
     if (existingUser)
       return res.status(401).json({ message: "User already registered!" });
@@ -72,7 +72,7 @@ const signUp = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id.toString(), email },
-      HASH_SECRET_KEY,
+      SECRET_KEY,
       {
         expiresIn: "3h",
       }

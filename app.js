@@ -1,11 +1,11 @@
+require("./config/db").connect();
 const express = require("express");
 const app = express();
 
 const { richValidationError, errorHandler } = require("./middleware/error");
 
-const run = async () => {
+const runApp = async () => {
   require("dotenv").config();
-  require("./config/db").connect();
 
   app.use(express.json());
 
@@ -22,4 +22,4 @@ const run = async () => {
   app.use(richValidationError, errorHandler);
 };
 
-run();
+runApp();

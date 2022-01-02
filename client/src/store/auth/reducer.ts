@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import { signin, signup, getUser} from "./services";
 import { AuthState } from "./types";
 

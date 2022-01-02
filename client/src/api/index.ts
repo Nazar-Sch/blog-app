@@ -1,12 +1,12 @@
-import axios from "axios";
+import axios from 'axios';
 
 const API_LINK = '/api';
 
 export const API = axios.create({
   baseURL: API_LINK,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
 API.interceptors.request.use(req => {
