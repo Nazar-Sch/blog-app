@@ -20,7 +20,7 @@ const createPost = async (req, res) => {
       date: Date.now(),
     });
     const savedPost = await newPost.save();
-    res.status(200).json({ savedPost });
+    res.status(200).json({ post: savedPost });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong. Try again." });
   }

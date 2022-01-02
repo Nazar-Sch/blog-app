@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
 import { Formik, FormikProps, Form } from 'formik';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Input } from '../../components/Input';
-import { useAuth } from '../../context/useAuth';
-import { validationSignUp } from '../../utils/validations';
-import { SignUpProps } from '../../api/user';
+import { Input } from '../../../components/Input';
+import { validationSignUp } from '../../../utils/validations';
+import { SignUpProps } from '../../../api/user';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { signup } from '../../../store/auth/services';
+import { useStyles, TitleTextField } from '../styles';
 
 export const SignUp = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const classes = useStyles();
+
+  const { user, isLoading, error, isLoggedIn } = useAppSelector(
+    state => state.authReducer
+  );
+
+  if (isLoggedIn) {
+    navigate('/posts');
+  }
+
   const initialValues = {
     firstName: '',
     lastName: '',
@@ -17,17 +31,10 @@ export const SignUp = () => {
     password: '',
   };
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const { signup } = useAuth();
-  const from = location.state?.from?.pathname || '/';
-
   const handleShowPassword = () => setShowPassword(!showPassword);
 
-  const onSubmit = async (values: SignUpProps) => {
-    console.log(values);
-    signup(values, () => navigate(from, { replace: true }));
+  const onSubmit = (values: SignUpProps) => {
+    dispatch(signup(values));
   };
 
   const goToSignIn = () => navigate('/signin');
@@ -45,14 +52,17 @@ export const SignUp = () => {
         errors,
         touched,
         handleBlur,
+        dirty,
       }: FormikProps<SignUpProps>) => (
-        <div>
+        <div className={classes.root}>
           <Form>
-            <Typography>Sign up</Typography>
+            <Typography variant='h3'>Sign up</Typography>
             <Input
               name='firstName'
-              placeholder='First name'
+              label='First name'
               variant='standard'
+              fullWidth
+              margin='normal'
               type='text'
               onChange={handleChange}
               value={values.firstName}
@@ -61,8 +71,10 @@ export const SignUp = () => {
             />
             <Input
               name='lastName'
-              placeholder='Last name'
+              label='Last name'
               variant='standard'
+              margin='normal'
+              fullWidth
               type='text'
               onChange={handleChange}
               value={values.lastName}
@@ -71,9 +83,11 @@ export const SignUp = () => {
             />
             <Input
               name='email'
-              placeholder='Email'
+              label='Your email'
               variant='standard'
-              type='email'
+              margin='normal'
+              fullWidth
+              type='text'
               onChange={handleChange}
               value={values.email}
               error={errors.email && touched.email ? true : false}
@@ -81,8 +95,10 @@ export const SignUp = () => {
             />
             <Input
               name='password'
-              placeholder='Password'
+              label='Password'
               id='standard-password-input'
+              margin='normal'
+              fullWidth
               variant='standard'
               type={showPassword ? 'text' : 'password'}
               onChange={handleChange}
@@ -91,12 +107,12 @@ export const SignUp = () => {
               error={errors.password && touched.password ? true : false}
               onBlur={handleBlur}
             />
-            <Button onClick={handleSubmit} type='submit'>
+            <Button onClick={handleSubmit} variant='outlined' type='submit' disabled={!dirty}>
               Submit
             </Button>
-            <Button onClick={goToSignIn}>
+            <Link to='/signin' className={classes.link}>
               Already have an account? Sign in
-            </Button>
+            </Link>
           </Form>
         </div>
       )}

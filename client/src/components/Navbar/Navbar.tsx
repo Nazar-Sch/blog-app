@@ -12,8 +12,10 @@ import {
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { makeStyles } from '@mui/styles';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
+import { Link } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { logout } from '../../store/auth/reducer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -45,16 +47,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface NavbarProps {
-  userName: string | null;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ userName }) => {
+export const Navbar: React.FC = () => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const { signout } = useAuth();
-
-  const navigate = useNavigate();
+  const { user } = useAppSelector(
+    state => state.authReducer
+  );
+  const dispatch = useAppDispatch();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,10 +61,13 @@ export const Navbar: React.FC<NavbarProps> = ({ userName }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
-    signout(() => navigate('/signin'));
   };
 
-  if (!userName) {
+  const logOut = () => {
+    dispatch(logout());
+  };
+
+  if (!user) {
     return null;
   }
 
@@ -75,7 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({ userName }) => {
         <Container>
           <Toolbar>
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-              {userName}
+              {user.firstName} {user.lastName}
             </Typography>
             <Link className={classes.link} to='/'>
               Home
@@ -109,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({ userName }) => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>Sign out</MenuItem>
+              <MenuItem onClick={logOut}>Sign out</MenuItem>
             </Menu>
           </Toolbar>
         </Container>

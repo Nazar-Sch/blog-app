@@ -34,7 +34,11 @@ const signIn = async (req, res, next) => {
 
     user.token = token;
 
-    return res.status(200).json({ token, userId: user._id.toString(), userName: `${user.firstName} ${user.lastName}` });
+    return res.status(200).json({
+      token,
+      userId: user._id.toString(),
+      user,
+    });
   } catch (err) {
     next(err);
     return res.status(500).json({ message: "Server error!" });
@@ -82,8 +86,8 @@ const signUp = async (req, res) => {
 
     res.status(201).json({
       userId: newUser._id.toString(),
-      userName: `${newUser.firstName} ${newUser.lastName}`,
-      token: newUser.token,
+      user: user,
+      token,
     });
   } catch (err) {
     console.error(err);
@@ -91,18 +95,16 @@ const signUp = async (req, res) => {
   }
 };
 
-const checkuser = async (req, res, next) => {
-  let currentUser;
-  console.log(req.cookies);
-  // if (req.cookies) {
-  //   const token = req.cookies;
-  //   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  //   currentUser = await User.findById(decoded.id);
-  // } else {
-  //   currentUser = null;
-  // }
+const getCurrentUser = async (req, res, next) => {
+  try {
+    const { user_id } = req.user;
+    const user = await User.findById(user_id).select('-password');
 
-  // res.status(200).send({ currentUser });
+    return res.status(200).json({ user });
+  } catch (err) {
+    next(err);
+    return res.status(500).json({ message: `"Server error! " Err: ${err}` });
+  }
 };
 
-module.exports = { signIn, signUp, checkuser };
+module.exports = { signIn, signUp, getCurrentUser };

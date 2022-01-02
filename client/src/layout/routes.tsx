@@ -4,18 +4,15 @@ import { Post } from "../pages/Post";
 
 export const routes = [
   {
-    path: '/',
-    component: <Home />,
-    exact: true,
+    path: '/posts',
+    element: <Home />,
   },
   {
     path: '/new-story',
-    component: <NewPost />,
-    exact: true,
+    element: <NewPost />,
   },
   {
     path: 'post/:id',
-    component: <Post />,
-    exact: true,
+    element: <Post />,
   },
 ]

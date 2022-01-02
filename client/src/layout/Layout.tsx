@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container } from '@mui/material';
+import { Outlet } from 'react-router-dom';
 
+import { getUser } from '../store/auth/services';
+import { useAppDispatch } from '../store/hooks';
 import { Navbar } from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
 
 export const Layout: React.FC = ({ children }) => {
-  const userId = localStorage.getItem('userId');
-  const userName = localStorage.getItem('userName');
+  const dispatch = useAppDispatch();
 
-  const navigate = useNavigate();
-
-  if (!userId && !userName) {
-    navigate('/signin');
-    return null;
-  }
+  useEffect(() => {
+    if (localStorage.token) {
+      dispatch(getUser());
+    }
+  }, []);
 
   return (
     <>
-      <Navbar userName={userName as string} />
-      <Container>{children}</Container>
+      <Navbar />
+      <Container>
+        <Outlet />
+      </Container>
     </>
   );
 };

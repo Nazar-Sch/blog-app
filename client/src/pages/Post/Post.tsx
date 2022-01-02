@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { CircularProgress, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import moment from 'moment';
 import { useParams } from 'react-router';
 
-import { Article } from '../../types/initialTypes';
-import { getSelectedPost } from '../../api/posts';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getSelectedPost } from '../../store/posts/services';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -19,22 +19,20 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const Post = () => {
-  const [post, setPost] = useState<Article | null>(null);
-  const { id } = useParams();
   const classes = useStyles();
+  const { id } = useParams();
+  const dispatch = useAppDispatch();
+
+  const { isLoading, selectedPost, error } = useAppSelector(state => state.postsReducer)
+
 
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await getSelectedPost(id as string);
-        setPost(data.post);
-      } catch (err) {
-        console.log(err);
-      }
-    })();
+    if (id) {
+      dispatch(getSelectedPost(id))
+    }
   }, [id]);
 
-  if (!post) {
+  if (isLoading && !selectedPost) {
     return (
       <div>
         <CircularProgress />
@@ -45,10 +43,10 @@ export const Post = () => {
   return (
     <div className={classes.root}>
       <div className={classes.heading}>
-        <Typography variant='h4'>{post.title}</Typography>
-        <Typography variant='body2'>{moment(post.date).format('LLL')}</Typography>
+        <Typography variant='h4'>{selectedPost?.title}</Typography>
+        <Typography variant='body2'>{moment(selectedPost?.date).format('LLL')}</Typography>
       </div>
-      <Typography variant='body1'>{post.content}</Typography>
+      <Typography variant='body1'>{selectedPost?.content}</Typography>
     </div>
   );
 };

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 
 import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
-import { Article } from '../../types/initialTypes';
-import { getAllPosts } from '../../api/posts';
-import { useAuth } from '../../context/useAuth';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getPosts } from '../../store/posts/services';
 
 const useStyles = makeStyles({
   root: {
@@ -19,25 +18,25 @@ const useStyles = makeStyles({
 });
 
 export const Home = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
-
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+
+  const { isLoading, posts, error } = useAppSelector(state => state.postsReducer)
 
   useEffect((() => {
-    (async () => {
-      try {
-        const { data } = await getAllPosts();
-        setArticles(data.posts);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
+    dispatch(getPosts());
   }), [])
 
+  if (isLoading && posts.length === 0) {
+    return (
+      <p>Loading...</p>
+    )
+  }
+  console.log(posts);
   return (
     <div className={classes.root}>
       <div className={classes.articlesRoot}>
-        {articles.map(article => (
+        {posts.map(article => (
           <Post article={article} />
         ))}
       </div>

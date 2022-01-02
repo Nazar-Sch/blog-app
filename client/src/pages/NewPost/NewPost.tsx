@@ -1,12 +1,16 @@
 import React from 'react';
 import { Button } from '@mui/material';
+
 import { useForm } from '../../hooks/useForm';
 import { Article } from '../../types/initialTypes';
 import { newArticleValidationSchema } from '../../validationSchema';
 import { useStyles, TitleTextField, StoryTextField } from './styles';
-import { addNewPost } from '../../api/posts';
+import { useAppDispatch } from '../../store/hooks';
+import { createNewPost } from '../../store/posts/services';
 
 export const NewPost: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const initialValues = { title: '', content: '' };
   const { handleChange, handleSubmit, values, errors } = useForm<Article>({
     validations: newArticleValidationSchema,
@@ -18,8 +22,7 @@ export const NewPost: React.FC = () => {
   const { title, content } = values;
 
   async function handleSubmitNewArticle() {
-    const newArticle = { title, content };
-    await addNewPost(newArticle);
+    dispatch(createNewPost({ title, content }));
   }
 
   return (

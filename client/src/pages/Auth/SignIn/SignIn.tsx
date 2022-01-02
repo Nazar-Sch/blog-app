@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
 import { Formik, Form, FormikProps } from 'formik';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Input } from '../../components/Input';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { User } from '../../types/initialTypes';
-import { useAuth } from '../../context/useAuth';
-import { SignInProps } from '../../api/user';
-import { validationSignIn } from '../../utils/validations';
+import { Input } from '../../../components/Input';
+import { SignInProps } from '../../../api/user';
+import { validationSignIn } from '../../../utils/validations';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { signin } from '../../../store/auth/services';
+import { useStyles, TitleTextField } from '../styles';
 
 interface IFormStatus {
   message: string;
@@ -35,20 +36,24 @@ const formStatusProps: IFormStatusProps = {
 
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { signin } = useAuth();
+  const classes = useStyles();
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const { user, isLoading, error, isLoggedIn } = useAppSelector(
+    state => state.authReducer
+  );
+
+  if (isLoggedIn) {
+    navigate('/posts');
+  }
 
   const intialValues = { email: '', password: '' };
 
   const handleShowPassword = () => setShowPassword(!showPassword);
-  const onSubmit = ({ email, password }: SignInProps) =>
-    signin({ email, password }, navigateToPosts);
 
-    const from = location.state?.from?.pathname || '/';
-
-  const navigateToPosts = () => navigate(from, { replace: true });
-  const goToSignUp = () => navigate('/signup');
+  const onSubmit = ({ email, password }: SignInProps) => {
+    dispatch(signin({ email, password }));
+  };
 
   return (
     <Formik
@@ -63,48 +68,51 @@ export const SignIn = () => {
         errors,
         touched,
         handleBlur,
+        dirty,
       }: FormikProps<SignInProps>) => (
-        <div>
-          <Typography>Sign In</Typography>
+        <div className={classes.root}>
+          <Typography variant='h3'>Sign In</Typography>
           <Form>
             <Input
               name='email'
-              placeholder='Email'
+              label='Your email'
               variant='standard'
+              margin="normal"
+              fullWidth
               type='text'
               onChange={handleChange}
               value={values.email}
               helperText={
-                errors.email && touched.email
-                  ? errors.email
-                  : ''
+                errors.email && touched.email ? errors.email : ''
               }
               error={errors.email && touched.email ? true : false}
               onBlur={handleBlur}
             />
             <Input
               name='password'
-              placeholder='Password'
+              label='Your password'
               id='standard-password-input'
               variant='standard'
+              margin="normal"
+              fullWidth
               type={showPassword ? 'text' : 'password'}
               onChange={handleChange}
               value={values.password}
               handleShowPassword={handleShowPassword}
               helperText={
                 errors.password && touched.password
-                  ? 'Please valid password. One uppercase, one lowercase, one special character and no spaces'
+                  ? 'Please type valid password. One uppercase, one lowercase, one special character and no spaces'
                   : ''
               }
               error={errors.password && touched.password ? true : false}
               onBlur={handleBlur}
             />
-            <Button onClick={handleSubmit} type='submit'>
+            <Button onClick={handleSubmit} variant='outlined' type='submit' disabled={!dirty}>
               Submit
             </Button>
-            <Button onClick={goToSignUp}>
+            <Link to='/signup' className={classes.link}>
               Don't have an account? Sign Up
-            </Button>
+            </Link>
           </Form>
         </div>
       )}

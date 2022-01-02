@@ -22,9 +22,9 @@ export const validationSignIn = Yup.object().shape({
 });
 
 export const validationSignUp = Yup.object().shape({
-  email: Yup.string().email().required('Email field is required.'),
   firstName: Yup.string().required('First name field is required'),
   lastName: Yup.string().required('Last name field is required'),
+  email: Yup.string().email().required('Email field is required.'),
   password: Yup.string()
     .matches(strongPswPattern)
     .required(
