@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Home = () => {
+export const Posts = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 

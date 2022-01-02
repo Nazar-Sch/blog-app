@@ -79,8 +79,8 @@ export const Navbar: React.FC = () => {
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
               {user.firstName} {user.lastName}
             </Typography>
-            <Link className={classes.link} to='/'>
-              Home
+            <Link className={classes.link} to='/posts'>
+              Posts
             </Link>
             <Link className={classes.link} to='/new-story'>
               Write a story

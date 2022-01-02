@@ -1,11 +1,11 @@
-import { Home } from "../pages/Home";
+import { Posts } from "../pages/Posts";
 import { NewPost } from "../pages/NewPost";
 import { Post } from "../pages/Post";
 
 export const routes = [
   {
     path: '/posts',
-    element: <Home />,
+    element: <Posts />,
   },
   {
     path: '/new-story',
