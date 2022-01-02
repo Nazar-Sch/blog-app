@@ -8,31 +8,7 @@ import { SignInProps } from '../../../api/user';
 import { validationSignIn } from '../../../utils/validations';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { signin } from '../../../store/auth/services';
-import { useStyles, TitleTextField } from '../styles';
-
-interface IFormStatus {
-  message: string;
-  type: string;
-}
-
-interface IFormStatusProps {
-  [key: string]: IFormStatus;
-}
-
-const formStatusProps: IFormStatusProps = {
-  success: {
-    message: 'Signed up successfully.',
-    type: 'success',
-  },
-  duplicate: {
-    message: 'Email-id already exist. Please use different email-id.',
-    type: 'error',
-  },
-  error: {
-    message: 'Something went wrong. Please try again.',
-    type: 'error',
-  },
-};
+import { useStyles } from '../styles';
 
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -43,7 +19,7 @@ export const SignIn = () => {
     state => state.authReducer
   );
 
-  if (isLoggedIn) {
+  if (isLoggedIn && user) {
     navigate('/posts');
   }
 
@@ -51,8 +27,8 @@ export const SignIn = () => {
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
-  const onSubmit = ({ email, password }: SignInProps) => {
-    dispatch(signin({ email, password }));
+  const onSubmit = (values: SignInProps) => {
+    dispatch(signin(values));
   };
 
   return (
@@ -77,7 +53,7 @@ export const SignIn = () => {
               name='email'
               label='Your email'
               variant='standard'
-              margin="normal"
+              margin='normal'
               fullWidth
               type='text'
               onChange={handleChange}
@@ -93,7 +69,7 @@ export const SignIn = () => {
               label='Your password'
               id='standard-password-input'
               variant='standard'
-              margin="normal"
+              margin='normal'
               fullWidth
               type={showPassword ? 'text' : 'password'}
               onChange={handleChange}
@@ -107,7 +83,12 @@ export const SignIn = () => {
               error={errors.password && touched.password ? true : false}
               onBlur={handleBlur}
             />
-            <Button onClick={handleSubmit} variant='outlined' type='submit' disabled={!dirty}>
+            <Button
+              onClick={handleSubmit}
+              variant='outlined'
+              type='submit'
+              disabled={!dirty}
+            >
               Submit
             </Button>
             <Link to='/signup' className={classes.link}>

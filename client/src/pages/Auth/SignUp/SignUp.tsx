@@ -8,7 +8,7 @@ import { validationSignUp } from '../../../utils/validations';
 import { SignUpProps } from '../../../api/user';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { signup } from '../../../store/auth/services';
-import { useStyles, TitleTextField } from '../styles';
+import { useStyles } from '../styles';
 
 export const SignUp = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -16,7 +16,7 @@ export const SignUp = () => {
   const navigate = useNavigate();
   const classes = useStyles();
 
-  const { user, isLoading, error, isLoggedIn } = useAppSelector(
+  const { isLoggedIn } = useAppSelector(
     state => state.authReducer
   );
 
@@ -36,8 +36,6 @@ export const SignUp = () => {
   const onSubmit = (values: SignUpProps) => {
     dispatch(signup(values));
   };
-
-  const goToSignIn = () => navigate('/signin');
 
   return (
     <Formik
