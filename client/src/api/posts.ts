@@ -9,7 +9,11 @@ export const addNewPost = (post: CreatedPost) =>
   API.post('/posts/new', post);
 
 export const deletePostByID = (id: string) =>
-  API.delete(`posts/delete/${id}`);
+  API.delete(`/posts/delete/${id}`);
 
 export const editPost = (id: string, post: CreatedPost) =>
-  API.put(`posts/edit/${id}`, post);
+  API.put(`/posts/edit/${id}`, post);
+
+export const addLikePostById = (id: string) =>
+  API.patch(`/posts/likes/${id}`);
+

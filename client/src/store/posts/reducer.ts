@@ -1,7 +1,12 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { getSelectedPost, createNewPost, getPosts } from "./services";
-import { Post, PostsState } from "./types";
+import {
+  getSelectedPost,
+  createNewPost,
+  getPosts,
+  updateLikes,
+} from './services';
+import { Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
@@ -11,22 +16,16 @@ export const initialState: PostsState = {
 };
 
 export const postsSlice = createSlice({
-  name: "posts",
+  name: 'posts',
   initialState,
   reducers: {},
   extraReducers: {
-    [getPosts.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post[]>
-    ) => {
+    [getPosts.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
       state.isLoading = false;
-      state.error = "";
+      state.error = '';
       state.posts = action.payload;
     },
-    [getPosts.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
+    [getPosts.rejected.type]: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
       state.posts = [];
@@ -36,7 +35,7 @@ export const postsSlice = createSlice({
       action: PayloadAction<Post>
     ) => {
       state.isLoading = false;
-      state.error = "";
+      state.error = '';
       state.selectedPost = action.payload;
     },
     [getSelectedPost.rejected.type]: (
@@ -52,7 +51,7 @@ export const postsSlice = createSlice({
       action: PayloadAction<Post>
     ) => {
       state.isLoading = false;
-      state.error = "";
+      state.error = '';
       state.selectedPost = action.payload;
     },
     [createNewPost.rejected.type]: (
@@ -62,6 +61,25 @@ export const postsSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
       state.selectedPost = null;
+    },
+    [updateLikes.fulfilled.type]: (
+      state,
+      action: PayloadAction<{ id: string; likes: any[] }>
+    ) => {
+      state.isLoading = false;
+      state.error = '';
+      state.posts = state.posts.map(post =>
+        post._id === action.payload.id
+          ? { ...post, likes: action.payload.likes }
+          : post
+      );
+    },
+    [updateLikes.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
     },
   },
 });

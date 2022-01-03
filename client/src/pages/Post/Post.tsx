@@ -86,7 +86,7 @@ export const Post = () => {
       {editMode ? (
         <PostForm
           handleSubmitArticle={handleChangePost}
-          initialValues={{ title: selectedPost?.title, content: selectedPost.content }}
+          initialValues={{ title: selectedPost?.title, content: selectedPost.content, author: selectedPost.author, likes: selectedPost.likes }}
         />
       ) : (
         <>

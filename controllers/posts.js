@@ -18,6 +18,8 @@ const createPost = async (req, res) => {
       title: req.body.title,
       content: req.body.content,
       date: Date.now(),
+      author: req.body.author,
+      likes: req.body.likes,
     });
     const savedPost = await newPost.save();
     res.status(200).json({ post: savedPost });
@@ -38,9 +40,17 @@ const getPostBuID = async (req, res) => {
 const deletePostById = async (req, res) => {
   try {
     const { id } = req.params;
-    const post = await Posts.findByIdAndDelete(id);
+    const post = await Posts.findById(id);
+    console.log('Req user id', req.user.user_id);
+    console.log('Post user id', post.author._id);
+
+    if (req.user.user_id !== post.author.id) {
+      return res.status(401).json({ message: 'You are not allowd delete this post'})
+    }
+
     if (!post) return res.status(404).json({ message: "Post not found" });
 
+    await post.remove();
     return res.status(200).json({ message: "Post deleted Successfully" });
   } catch (e) {
     return res
@@ -64,4 +74,36 @@ const editPost = async (req, res) => {
   }
 };
 
-module.exports = { getAllPosts, createPost, getPostBuID, deletePostById, editPost };
+const updateLikes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const post = await Posts.findById(id);
+
+    if (
+      post.likes.filter((like) => like.user.toString() === req.user.user_id)
+        .length > 0
+    ) {
+      const removeIndex = post.likes.map(like => like.user.toString()).indexOf(req.user.user_id);
+      post.likes.splice(removeIndex);
+    } else {
+      post.likes.unshift({ user: req.user.user_id });
+    }
+
+    await post.save();
+
+    res.status(200).json({ id: post._id, likes: post.likes });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
+  }
+};
+
+module.exports = {
+  getAllPosts,
+  createPost,
+  getPostBuID,
+  deletePostById,
+  editPost,
+  updateLikes,
+};

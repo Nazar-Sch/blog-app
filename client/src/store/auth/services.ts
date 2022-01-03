@@ -48,7 +48,7 @@ export const getUser = createAsyncThunk(
       const {
         data: { user },
       } = await getUserByIdCall();
-      
+
       return { user };
     } catch (err) {
       return rejectWithValue(err as Error);

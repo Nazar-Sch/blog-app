@@ -1,4 +1,4 @@
-export type UserData = { firstName: string, lastName: string };
+export type UserData = { firstName: string, lastName: string, _id: string };
 
 export interface AuthState {
   user: UserData | null,

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addNewPost, getAllPosts, getPostById } from '../../api/posts';
+import { addLikePostById, addNewPost, getAllPosts, getPostById } from '../../api/posts';
 import { CreatedPost } from '../../types/initialTypes';
 
 export const getPosts = createAsyncThunk(
@@ -41,6 +41,21 @@ export const createNewPost = createAsyncThunk(
       } = await addNewPost(createdPost);
 
       return post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const updateLikes = createAsyncThunk(
+  'posts/updateLike',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const {
+        data,
+      } = await addLikePostById(id);
+
+      return {id: data.id, likes: data.likes };
     } catch (err) {
       rejectWithValue(err as Error);
     }

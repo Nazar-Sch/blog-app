@@ -1,12 +1,16 @@
+import { Post } from "../store/posts/types";
+
 export interface Article {
   title: string;
   content: string;
   date: Date | string;
+  likes?: any[],
+  author: { firstname: string, lastName: string }
   _id: string;
 }
 
 export interface ArticlesProps {
-  article: Article;
+  article: Post;
 }
 
 export interface NewArticleProps {
@@ -18,6 +22,8 @@ export interface NewArticleProps {
 export type CreatedPost = {
   title: string;
   content: string;
+  author: any,
+  likes: any,
 }
 
 

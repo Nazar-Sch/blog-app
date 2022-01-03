@@ -8,7 +8,7 @@ import { PostForm } from '../../components/Forms/PostForm';
 export const NewPost: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const initialValues = { title: '', content: '' };
+  const initialValues = { title: '', content: '', author: null, likes: [] };
 
  const handleSubmitNewArticle = async (post: CreatedPost) => {
     dispatch(createNewPost(post));
