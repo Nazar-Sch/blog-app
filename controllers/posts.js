@@ -17,10 +17,12 @@ const createPost = async (req, res) => {
     const newPost = new Posts({
       title: req.body.title,
       content: req.body.content,
-      date: Date.now(),
       author: req.body.author,
-      likes: req.body.likes,
+      date: Date.now(),
+      likes: [],
     });
+    console.log('Author', req.body.author);
+    console.log('new post', newPost);
     const savedPost = await newPost.save();
     res.status(200).json({ post: savedPost });
   } catch (error) {
@@ -41,8 +43,6 @@ const deletePostById = async (req, res) => {
   try {
     const { id } = req.params;
     const post = await Posts.findById(id);
-    console.log('Req user id', req.user.user_id);
-    console.log('Post user id', post.author._id);
 
     if (req.user.user_id !== post.author.id) {
       return res.status(401).json({ message: 'You are not allowd delete this post'})
@@ -63,9 +63,10 @@ const editPost = async (req, res) => {
   try {
     const { id } = req.params;
     const editedPost = req.body;
-    const post = await Posts.findByIdAndUpdate(id, editedPost);
-    if (!post) return res.status(404).json({ message: "Post not found" });
 
+    const post = await Posts.findByIdAndUpdate(id, editedPost, { new: true });
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    console.log(post);
     return res.status(200).json({ post });
   } catch (e) {
     return res

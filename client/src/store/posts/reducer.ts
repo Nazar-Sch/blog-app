@@ -1,12 +1,15 @@
+import { CallToActionSharp } from '@mui/icons-material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import moment from 'moment';
 
 import {
   getSelectedPost,
   createNewPost,
   getPosts,
   updateLikes,
+  editPost,
 } from './services';
-import { Post, PostsState } from './types';
+import { CreatedPost, EditPost, Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
@@ -62,6 +65,27 @@ export const postsSlice = createSlice({
       state.error = action.payload;
       state.selectedPost = null;
     },
+    [editPost.fulfilled.type]: (
+      state,
+      action: PayloadAction<CreatedPost>
+    ) => {
+      const updated = {
+        title: action.payload.title,
+        content: action.payload.content,
+        date: Date.now().toString(),
+        likes: state.selectedPost?.likes || [],
+        author: action.payload.author,
+        _id: action.payload.id,
+      };
+
+      state.isLoading = false;
+      state.error = '';
+      state.selectedPost = updated;
+    },
+    [editPost.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
     [updateLikes.fulfilled.type]: (
       state,
       action: PayloadAction<{ id: string; likes: any[] }>
@@ -81,6 +105,8 @@ export const postsSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    // Add Edit post
+    // Add delete post
   },
 });
 

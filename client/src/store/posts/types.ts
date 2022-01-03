@@ -2,13 +2,20 @@ export interface Post {
   title: string;
   content: string;
   date: Date | string;
-  likes: any[],
-  author: {
-    id: string,
-    firstName: string,
-    lastName: string,
-  }
+  likes: Likes[];
+  author: Author;
   _id: string;
+}
+
+export type Likes = {
+  user: string;
+  _id: string;
+}
+
+export type Author = {
+  id: string,
+  firstName: string,
+  lastName: string,
 }
 
 export interface PostsState {
@@ -21,11 +28,16 @@ export interface PostsState {
 export type CreatedPost = {
   title: string;
   content: string;
-  likes: any[],
   author: {
     id: string,
     firstName: string,
     lastName: string,
   }
+  id: string;
+}
+
+export type EditPost = {
+  title: string;
+  content: string;
 }
 

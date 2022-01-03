@@ -7,6 +7,7 @@ import { useStyles } from './styles';
 import { InputField } from '../Input';
 import { TextFieldMultiline } from '../TextField';
 import { useAppSelector } from '../../../store/hooks';
+import { Post } from '../../../store/posts/types';
 
 interface PostFormProps {
   handleSubmitArticle: (post: CreatedPost) => void;
@@ -14,12 +15,11 @@ interface PostFormProps {
 }
 
 export const PostForm: React.FC<PostFormProps> = ({
-  initialValues,
   handleSubmitArticle,
+  initialValues,
 }) => {
   const [title, setTitle] = useState(initialValues.title || '');
   const [content, setContent] = useState(initialValues.content || '');
-  const { user } = useAppSelector(state => state.authReducer);
 
   const classes = useStyles();
 
@@ -35,26 +35,19 @@ export const PostForm: React.FC<PostFormProps> = ({
     setContent(e.target.value);
   };
 
-  const handleSubmit = () => {
-    const post = {
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const updatedPost = {
       title,
       content,
-      author: { 
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        id: user?._id,
-      },
-      likes: [],
+      author: initialValues.author,
+
     }
-    console.log(post);
-    return handleSubmitArticle(post);
-  }
+    handleSubmitArticle(updatedPost);
+  };
 
   return (
-    <form
-      className={classes.root}
-      onSubmit={handleSubmit}
-    >
+    <form className={classes.root} onSubmit={handleSubmit}>
       <InputField
         name='title'
         value={title}

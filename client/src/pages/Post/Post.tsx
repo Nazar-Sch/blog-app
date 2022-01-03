@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { CircularProgress, IconButton, Theme, Typography } from '@mui/material';
+import {
+  CircularProgress,
+  IconButton,
+  Theme,
+  Typography,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { makeStyles } from '@mui/styles';
 import moment from 'moment';
@@ -8,10 +13,10 @@ import { useNavigate } from 'react-router';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { getSelectedPost } from '../../store/posts/services';
+import { editPost, getSelectedPost } from '../../store/posts/services';
 import { PostForm } from '../../components/Forms/PostForm';
 import { CreatedPost } from '../../types/initialTypes';
-import { deletePostByID, editPost } from '../../api/posts';
+import { deletePostByID, editPostById } from '../../api/posts';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -34,32 +39,21 @@ export const Post = () => {
   const classes = useStyles();
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  
+    useEffect(() => {
+      if (id) {
+        dispatch(getSelectedPost(id));
+      }
+    }, [id]);
+  
+    const navigate = useNavigate();
 
-  const { isLoading, selectedPost, error } = useAppSelector(state => state.postsReducer)
+  const { isLoading, selectedPost, error } = useAppSelector(
+    state => state.postsReducer
+  );
+  const { user } = useAppSelector(state => state.authReducer);
 
-
-  useEffect(() => {
-    if (id) {
-      dispatch(getSelectedPost(id))
-    }
-  }, [id]);
-
-  const navigate = useNavigate();
-
-  const updatePost = (id: string) => {
-    setEditMode(true);
-  };
-
-  const deletePost = async (id: string) => {
-    try {
-      await deletePostByID(id);
-      return navigate('/');
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  if (isLoading && !selectedPost) {
+  if (isLoading) {
     return (
       <div>
         <CircularProgress />
@@ -71,33 +65,64 @@ export const Post = () => {
     return null;
   }
 
+  if (!user) {
+    return <div>
+      You are not allowed to create new post. Sign in!
+    </div>
+  };
+
+  const isAuthorSelectedPost = selectedPost?.author.id === user?._id;
+
+  const handleEditMode = () => {
+    setEditMode(!editMode);
+  };
+
+  const deletePost = async (id: string) => {
+    try {
+      await deletePostByID(id);
+      navigate('/');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleChangePost = async (updatedPost: CreatedPost) => {
-    await editPost(selectedPost._id, updatedPost);
+    dispatch(editPost({id: selectedPost._id, post: updatedPost}))
     setEditMode(false);
   };
 
   return (
     <div className={classes.root}>
       <div className={classes.heading}>
-        <Typography variant='h4'>{selectedPost?.title}</Typography>
-        <Typography variant='body2'>{moment(selectedPost?.date).format('LLL')}</Typography>
+        <Typography variant='body1'>
+          Author: {selectedPost?.author.firstName}{' '}
+          {selectedPost?.author.lastName}
+        </Typography>
+        <Typography variant='body2'>
+          Likes: {selectedPost.likes.length}
+        </Typography>
       </div>
-      <Typography variant='body1'>{selectedPost?.content}</Typography>
       {editMode ? (
         <PostForm
           handleSubmitArticle={handleChangePost}
-          initialValues={{ title: selectedPost?.title, content: selectedPost.content, author: selectedPost.author, likes: selectedPost.likes }}
+          initialValues={{
+            title: selectedPost?.title,
+            content: selectedPost.content,
+            author: { id: user._id, firstName: user.firstName, lastName: user.lastName }
+          }}
         />
       ) : (
         <>
-          <div className={classes.actionButtons}>
-            <IconButton onClick={() => updatePost(selectedPost?._id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => deletePost(selectedPost?._id)}>
-              <DeleteOutlineIcon />
-            </IconButton>
-          </div>
+          {isAuthorSelectedPost && (
+            <div className={classes.actionButtons}>
+              <IconButton onClick={handleEditMode}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={() => deletePost(selectedPost?._id)}>
+                <DeleteOutlineIcon />
+              </IconButton>
+            </div>
+          )}
           <div className={classes.heading}>
             <Typography variant='h4'>{selectedPost?.title}</Typography>
             <Typography variant='body2'>

@@ -1,11 +1,11 @@
-import { Post } from "../store/posts/types";
+import { Author, Likes, Post } from "../store/posts/types";
 
 export interface Article {
   title: string;
   content: string;
   date: Date | string;
-  likes?: any[],
-  author: { firstname: string, lastName: string }
+  likes: Likes[],
+  author: Author;
   _id: string;
 }
 
@@ -22,8 +22,7 @@ export interface NewArticleProps {
 export type CreatedPost = {
   title: string;
   content: string;
-  author: any,
-  likes: any,
+  author: Author;
 }
 
 

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addLikePostById, addNewPost, getAllPosts, getPostById } from '../../api/posts';
+import { addLikePostById, addNewPost, editPostById, getAllPosts, getPostById } from '../../api/posts';
 import { CreatedPost } from '../../types/initialTypes';
+import { EditPost } from './types';
 
 export const getPosts = createAsyncThunk(
   'posts/all',
@@ -56,6 +57,23 @@ export const updateLikes = createAsyncThunk(
       } = await addLikePostById(id);
 
       return {id: data.id, likes: data.likes };
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const editPost = createAsyncThunk(
+  'posts/edit',
+  async ({ id, post }: { id: string, post: CreatedPost}, { rejectWithValue }) => {
+    try {
+      const {
+        data,
+      } = await editPostById(id, post);
+      const updatedPost = { ...data.post, id };
+      console.log('returned post to edit', updatedPost);
+
+      return updatedPost;
     } catch (err) {
       rejectWithValue(err as Error);
     }

@@ -1,4 +1,5 @@
 import { API } from '.';
+import { EditPost } from '../store/posts/types';
 import { CreatedPost } from '../types/initialTypes';
 
 export const getAllPosts = () => API.get('/posts');
@@ -11,7 +12,7 @@ export const addNewPost = (post: CreatedPost) =>
 export const deletePostByID = (id: string) =>
   API.delete(`/posts/delete/${id}`);
 
-export const editPost = (id: string, post: CreatedPost) =>
+export const editPostById = (id: string, post: CreatedPost) =>
   API.put(`/posts/edit/${id}`, post);
 
 export const addLikePostById = (id: string) =>
