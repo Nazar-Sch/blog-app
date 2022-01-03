@@ -1,14 +1,16 @@
 import React from 'react';
 
-import { CreatedPost } from '../../types/initialTypes';
+// import { CreatedPost } from '../../types/initialTypes';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createNewPost } from '../../store/posts/services';
 import { PostForm } from '../../components/Forms/PostForm';
+import { useNavigate } from 'react-router-dom';
+import { CreatedPost } from '../../types/initialTypes';
 
 export const NewPost: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state.authReducer);
-
+  const navigate = useNavigate();
   if (!user) {
     return <div>
       You are not allowed to create new post. Sign in!
@@ -23,7 +25,7 @@ export const NewPost: React.FC = () => {
   const initialValues = { title: '', content: '', author };
 
  const handleSubmitNewArticle = (post: CreatedPost) => {
-    dispatch(createNewPost(post));
+    dispatch(createNewPost({ createdPost: post, cb: () => navigate(`/posts`) }));
   }
 
   return (

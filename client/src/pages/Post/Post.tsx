@@ -13,7 +13,11 @@ import { useNavigate } from 'react-router';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { editPost, getSelectedPost } from '../../store/posts/services';
+import {
+  editPost,
+  getSelectedPost,
+  deletePost,
+} from '../../store/posts/services';
 import { PostForm } from '../../components/Forms/PostForm';
 import { CreatedPost } from '../../types/initialTypes';
 import { deletePostByID, editPostById } from '../../api/posts';
@@ -39,14 +43,14 @@ export const Post = () => {
   const classes = useStyles();
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  
-    useEffect(() => {
-      if (id) {
-        dispatch(getSelectedPost(id));
-      }
-    }, [id]);
-  
-    const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getSelectedPost(id));
+    }
+  }, [id]);
+
+  const navigate = useNavigate();
 
   const { isLoading, selectedPost, error } = useAppSelector(
     state => state.postsReducer
@@ -66,10 +70,8 @@ export const Post = () => {
   }
 
   if (!user) {
-    return <div>
-      You are not allowed to create new post. Sign in!
-    </div>
-  };
+    return <div>You are not allowed to create new post. Sign in!</div>;
+  }
 
   const isAuthorSelectedPost = selectedPost?.author.id === user?._id;
 
@@ -77,17 +79,12 @@ export const Post = () => {
     setEditMode(!editMode);
   };
 
-  const deletePost = async (id: string) => {
-    try {
-      await deletePostByID(id);
-      navigate('/');
-    } catch (e) {
-      console.log(e);
-    }
+  const removePost = (id: string) => {
+    dispatch(deletePost({ id, cb: () => navigate('/posts') }));
   };
 
   const handleChangePost = async (updatedPost: CreatedPost) => {
-    dispatch(editPost({id: selectedPost._id, post: updatedPost}))
+    dispatch(editPost({ id: selectedPost._id, post: updatedPost }));
     setEditMode(false);
   };
 
@@ -108,7 +105,11 @@ export const Post = () => {
           initialValues={{
             title: selectedPost?.title,
             content: selectedPost.content,
-            author: { id: user._id, firstName: user.firstName, lastName: user.lastName }
+            author: {
+              id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+            },
           }}
         />
       ) : (
@@ -118,7 +119,7 @@ export const Post = () => {
               <IconButton onClick={handleEditMode}>
                 <EditIcon />
               </IconButton>
-              <IconButton onClick={() => deletePost(selectedPost?._id)}>
+              <IconButton onClick={() => removePost(selectedPost?._id)}>
                 <DeleteOutlineIcon />
               </IconButton>
             </div>

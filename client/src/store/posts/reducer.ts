@@ -8,6 +8,7 @@ import {
   getPosts,
   updateLikes,
   editPost,
+  deletePost,
 } from './services';
 import { CreatedPost, EditPost, Post, PostsState } from './types';
 
@@ -105,8 +106,20 @@ export const postsSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    // Add Edit post
-    // Add delete post
+    [deletePost.fulfilled.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = '';
+    },
+    [deletePost.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
