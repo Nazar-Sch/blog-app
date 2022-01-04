@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { CircularProgress, Theme, Typography } from '@mui/material';
+import {
+  CircularProgress,
+  IconButton,
+  Stack,
+  Theme,
+  Typography,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { makeStyles } from '@mui/styles';
-import axios from 'axios';
 import moment from 'moment';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
-
-import { Article, CreatedPost } from '../../types/initialTypes';
-import EditIcon from '@mui/icons-material/Edit';
-import { IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { deletePostByID, editPost } from '../../api/posts';
+import Chip from '@mui/material/Chip';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+  editPost,
+  getSelectedPost,
+  deletePost,
+} from '../../store/posts/services';
 import { PostForm } from '../../components/Forms/PostForm';
+import { CreatedPost } from '../../types/initialTypes';
+import { deletePostByID, editPostById } from '../../api/posts';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -29,39 +40,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const Post = () => {
-  const [post, setPost] = useState<Article | null>(null);
+export const Post: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
-
-  const { id } = useParams();
   const classes = useStyles();
-  const navigate = useNavigate();
+  const { id } = useParams();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get(`/api/posts/${id}`);
-        setPost(data.post);
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-  }, [id, editMode]);
-
-  const updatePost = (id: string) => {
-    setEditMode(true);
-  };
-
-  const deletePost = async (id: string) => {
-    try {
-      await deletePostByID(id);
-      return navigate('/');
-    } catch (e) {
-      console.log(e);
+    if (id) {
+      dispatch(getSelectedPost(id));
     }
-  };
+  }, [id]);
 
-  if (!post) {
+  const navigate = useNavigate();
+
+  const { isLoading, selectedPost, error } = useAppSelector(
+    state => state.postsReducer
+  );
+  const { user } = useAppSelector(state => state.authReducer);
+
+  if (isLoading) {
     return (
       <div>
         <CircularProgress />
@@ -69,35 +67,80 @@ export const Post = () => {
     );
   }
 
+  if (!selectedPost) {
+    return null;
+  }
+
+  if (!user) {
+    return <div>You are not allowed to create new post. Sign in!</div>;
+  }
+
+  const isAuthorSelectedPost = selectedPost?.author.id === user?._id;
+
+  const handleEditMode = () => {
+    setEditMode(!editMode);
+  };
+
+  const removePost = (id: string) => {
+    dispatch(deletePost({ id, cb: () => navigate('/posts') }));
+  };
+
   const handleChangePost = async (updatedPost: CreatedPost) => {
-    await editPost(post._id, updatedPost);
-    return setEditMode(false);
+    dispatch(editPost({ id: selectedPost._id, post: updatedPost }));
+    setEditMode(false);
   };
 
   return (
     <div className={classes.root}>
+      <div className={classes.heading}>
+        <Typography variant='body1'>
+          Author: {selectedPost?.author.firstName}{' '}
+          {selectedPost?.author.lastName}
+        </Typography>
+
+        <Typography variant='body2'>
+          Likes: {selectedPost.likes.length}
+        </Typography>
+      </div>
+      {selectedPost.tags && selectedPost.tags.length > 0 ? (
+        <Stack direction='row' spacing={1} marginBottom={1}>
+          {selectedPost.tags.map(tag => (
+            <Chip label={tag} />
+          ))}
+        </Stack>
+      ) : null}
       {editMode ? (
         <PostForm
           handleSubmitArticle={handleChangePost}
-          initialValues={{ title: post.title, content: post.content }}
+          initialValues={{
+            title: selectedPost?.title,
+            content: selectedPost.content,
+            author: {
+              id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+            },
+          }}
         />
       ) : (
         <>
-          <div className={classes.actionButtons}>
-            <IconButton onClick={() => updatePost(post._id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => deletePost(post._id)}>
-              <DeleteOutlineIcon />
-            </IconButton>
-          </div>
+          {isAuthorSelectedPost && (
+            <div className={classes.actionButtons}>
+              <IconButton onClick={handleEditMode}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={() => removePost(selectedPost?._id)}>
+                <DeleteOutlineIcon />
+              </IconButton>
+            </div>
+          )}
           <div className={classes.heading}>
-            <Typography variant='h4'>{post.title}</Typography>
+            <Typography variant='h4'>{selectedPost?.title}</Typography>
             <Typography variant='body2'>
-              {moment(post.date).format('LLL')}
+              {moment(selectedPost.date).format('LLL')}
             </Typography>
           </div>
-          <Typography variant='body1'>{post.content}</Typography>
+          <Typography variant='body1'>{selectedPost?.content}</Typography>
         </>
       )}
     </div>

@@ -1,21 +1,31 @@
-import { Home } from "../pages/Home";
+import { Posts } from "../pages/Posts";
 import { NewPost } from "../pages/NewPost";
 import { Post } from "../pages/Post";
+import { Navigate } from "react-router-dom";
 
 export const routes = [
   {
+    path: '/posts',
+    element: <Posts />,
+  },
+  {
+    path: '/posts/search?query=',
+    element: <Posts />,
+  },
+  {
+    path: '/posts/search',
+    element: <Posts />,
+  },
+  {
     path: '/',
-    component: <Home />,
-    exact: true,
+    element: <Navigate to='/posts' />,
   },
   {
     path: '/new-story',
-    component: <NewPost />,
-    exact: true,
+    element: <NewPost />,
   },
   {
     path: 'post/:id',
-    component: <Post />,
-    exact: true,
-  }
+    element: <Post />,
+  },
 ]

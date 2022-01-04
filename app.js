@@ -1,28 +1,26 @@
 const express = require("express");
-const config = require("config");
-const mongoose = require("mongoose");
 
 const app = express();
 
-app.use(express.json());
+const { richValidationError, errorHandler } = require("./middleware/error");
 
-app.use("/api/posts", require("./routes/posts.route"));
+const runApp = async () => {
+  require("./config/db").connect();
+  require("dotenv").config();
 
-const PORT = config.get("port") || 5000;
+  app.use(express.json());
 
-const startApp = async () => {
-  try {
-    await mongoose.connect(config.get("mongoURI"), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    app.listen(PORT, () =>
-      console.log(`Blog server started on port ${PORT}...`)
-    );
-  } catch (e) {
-    console.log(`Server error: ${e.message}`);
-    process.exit(1);
-  }
+  const { API_PORT } = process.env;
+
+  app.use(express.json());
+
+  require("./routes")(app);
+
+  const PORT = API_PORT || 5000;
+
+  app.listen(PORT, () => console.log(`Blog server started on port ${PORT}...`));
+
+  app.use(richValidationError, errorHandler);
 };
 
-startApp();
+runApp();

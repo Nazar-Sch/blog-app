@@ -9,7 +9,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-import { ArticlesProps } from '../../types/initialTypes';
+import { Post as PostType} from '../../store/posts/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   articleRoot: {
@@ -60,25 +60,30 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const Post: React.FC<ArticlesProps> = ({ article }) => {
+interface PostProps {
+  clickOnLike: (id: string) => void;
+  article: PostType,
+}
+
+export const Post: React.FC<PostProps> = ({ article, clickOnLike }) => {
   const classes = useStyles();
+  const { date, title, content, _id, author, likes } = article;
 
-  const { date, title, content, _id } = article;
-
-  const clickOnLike = () => {
-    console.log('Like');
-  };
 
   const clickOnSave = () => {
     console.log('Save');
   };
+
+  const handleClickOnLike = () => {
+    clickOnLike(_id);
+  }
 
   return (
     <Paper elevation={0} className={classes.articleRoot}>
       <Box alignItems='center' display='flex'>
         <AccountCircle />
         <Typography variant='caption' className={classes.name}>
-          User name
+          {author.firstName} {author.lastName}
         </Typography>
       </Box>
       <Typography variant='caption' className={classes.date}>
@@ -94,9 +99,10 @@ export const Post: React.FC<ArticlesProps> = ({ article }) => {
         <IconButton size='small' onClick={clickOnSave} color='secondary'>
           <BookmarkBorderIcon />
         </IconButton>
-        <IconButton size='small' onClick={clickOnLike}>
+        <IconButton size='small' onClick={handleClickOnLike}>
           <FavoriteIcon />
         </IconButton>
+          {likes.length}
       </Box>
     </Paper>
   );
