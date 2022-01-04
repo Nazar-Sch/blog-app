@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import ClearIcon from '@mui/icons-material/Clear';
-import ChipInput from 'material-ui-chip-input';
 import { Chips } from '../Chips';
 import { ChipData } from '../Chips/Chips';
 

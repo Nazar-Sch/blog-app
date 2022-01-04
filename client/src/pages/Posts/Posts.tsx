@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import ChipInput from 'material-ui-chip-input'
 
 import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
