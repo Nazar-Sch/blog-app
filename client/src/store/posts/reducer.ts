@@ -9,6 +9,8 @@ import {
   updateLikes,
   editPost,
   deletePost,
+  getPostsBySearch,
+  getPostsByTag,
 } from './services';
 import { CreatedPost, EditPost, Post, PostsState } from './types';
 
@@ -30,6 +32,26 @@ export const postsSlice = createSlice({
       state.posts = action.payload;
     },
     [getPosts.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+      state.posts = [];
+    },
+    [getPostsBySearch.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
+      state.isLoading = false;
+      state.error = '';
+      state.posts = action.payload;
+    },
+    [getPostsBySearch.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+      state.posts = [];
+    },
+    [getPostsByTag.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
+      state.isLoading = false;
+      state.error = '';
+      state.posts = action.payload;
+    },
+    [getPostsByTag.rejected.type]: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
       state.posts = [];

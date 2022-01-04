@@ -13,16 +13,7 @@ import { useStyles } from '../styles';
 export const SignUp = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const classes = useStyles();
-
-  const { isLoggedIn } = useAppSelector(
-    state => state.authReducer
-  );
-
-  if (isLoggedIn) {
-    navigate('/posts');
-  }
 
   const initialValues = {
     firstName: '',

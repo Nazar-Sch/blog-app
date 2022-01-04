@@ -23,6 +23,7 @@ const schema = new Schema({
       },
     },
   ],
+  tags: [String],
 });
 
 module.exports = model("Posts", schema);

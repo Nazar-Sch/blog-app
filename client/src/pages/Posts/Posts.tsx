@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
+import ChipInput from 'material-ui-chip-input'
 
 import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { getPosts, updateLikes } from '../../store/posts/services';
+import { Pagination } from '../../components/Pagination';
 
 const useStyles = makeStyles({
   root: {
@@ -47,6 +49,7 @@ export const Posts = () => {
         ) : posts.map(article => (
           <Post article={article} clickOnLike={clickOnLike} />
         ))}
+        <Pagination page={1} />
       </div>
       <Tags />
     </div>

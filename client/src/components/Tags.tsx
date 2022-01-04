@@ -1,6 +1,18 @@
-import React from 'react';
-import { Chip, Theme, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Chip,
+  CircularProgress,
+  IconButton,
+  Theme,
+  Typography,
+} from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import { makeStyles } from '@mui/styles';
+
+import { getPosts, getPostsByTag } from '../store/posts/services';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { getTags } from '../store/tags/services';
+import { Tags as TagsType } from '../store/tags/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -14,18 +26,56 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const Tags = () => {
+  const [isShowClearButton, setIsShowButtonClear] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const { tags, isLoading } = useAppSelector(state => state.tagsReducer);
   const classes = useStyles();
 
-  const handleClick = () => {
-    console.log('Click on tags');
+  useEffect(() => {
+    dispatch(getTags());
+  }, [dispatch]);
+
+  const handleClick =
+    ({ posts }: TagsType) =>
+    async () => {
+      dispatch(getPostsByTag(posts.join(',')));
+      setIsShowButtonClear(true);
+    };
+
+  const handleClearSearchByTags = () => {
+    dispatch(getPosts());
+    setIsShowButtonClear(false);
   };
+
   return (
     <div className={classes.root}>
-      <Typography variant='h6' gutterBottom>
-        Topics:
-      </Typography>
-      <Chip label='Travel' onClick={handleClick} />
-      <Chip label='City' onClick={handleClick} />
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <>
+          <Typography variant='h6' gutterBottom>
+            Discover by tags:
+            {isShowClearButton && (
+              <IconButton size='small' onClick={handleClearSearchByTags}>
+                <ClearIcon />
+              </IconButton>
+            )}
+          </Typography>
+          {tags && (
+            <>
+              {tags.map(tag => (
+                <Chip
+                  component={'button'}
+                  label={tag.label}
+                  clickable
+                  onClick={handleClick(tag)}
+                />
+              ))}
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 };

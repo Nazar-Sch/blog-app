@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const Posts = require("../models/Posts");
+const Tags = require("../models/Tags");
 
 const getAllPosts = async (req, res) => {
   try {
@@ -12,17 +13,56 @@ const getAllPosts = async (req, res) => {
   }
 };
 
+const getPostsByTags = async (req, res) => {
+  try {
+    const { tags } = req.query;
+    const postsIds = tags.split(',');
+    
+    const posts = await Posts.find({
+      _id: { $in: postsIds }
+    });
+
+    res.status(200).json({ posts });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong. Try again." });
+  }
+};
+
+const getPostsBySearch = async (req, res) => {
+  try {
+    const { query, tags } = req.query;
+    const title = new RegExp(query, "i");
+
+    const posts = await Posts.find({
+      $or: [{ title }, { tags: { $in: tags.split(",") } }],
+    });
+
+    res.status(200).json({ posts });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong. Try again." });
+  }
+};
+
 const createPost = async (req, res) => {
   try {
+    const { title, content, author, tags } = req.body;
+
     const newPost = new Posts({
-      title: req.body.title,
-      content: req.body.content,
-      author: req.body.author,
+      title: title,
+      content: content,
+      author: author,
       date: Date.now(),
+      tags: tags,
       likes: [],
     });
-    console.log('Author', req.body.author);
-    console.log('new post', newPost);
+
+    tags.map((tag) =>
+      new Tags({
+        label: tag,
+        posts: newPost._id,
+      }).save()
+    );
+
     const savedPost = await newPost.save();
     res.status(200).json({ post: savedPost });
   } catch (error) {
@@ -45,7 +85,9 @@ const deletePostById = async (req, res) => {
     const post = await Posts.findById(id);
 
     if (req.user.user_id !== post.author.id) {
-      return res.status(401).json({ message: 'You are not allowd delete this post'})
+      return res
+        .status(401)
+        .json({ message: "You are not allowd delete this post" });
     }
 
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -84,7 +126,9 @@ const updateLikes = async (req, res) => {
       post.likes.filter((like) => like.user.toString() === req.user.user_id)
         .length > 0
     ) {
-      const removeIndex = post.likes.map(like => like.user.toString()).indexOf(req.user.user_id);
+      const removeIndex = post.likes
+        .map((like) => like.user.toString())
+        .indexOf(req.user.user_id);
       post.likes.splice(removeIndex);
     } else {
       post.likes.unshift({ user: req.user.user_id });
@@ -107,4 +151,6 @@ module.exports = {
   deletePostById,
   editPost,
   updateLikes,
+  getPostsBySearch,
+  getPostsByTags,
 };

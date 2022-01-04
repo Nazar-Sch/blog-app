@@ -13,15 +13,7 @@ import { useStyles } from '../styles';
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const classes = useStyles();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, isLoading, error, isLoggedIn } = useAppSelector(
-    state => state.authReducer
-  );
-
-  if (isLoggedIn && user) {
-    navigate('/posts');
-  }
 
   const intialValues = { email: '', password: '' };
 

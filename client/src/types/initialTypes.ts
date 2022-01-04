@@ -23,6 +23,7 @@ export type CreatedPost = {
   title: string;
   content: string;
   author: Author;
+  tags?: string[],
 }
 
 

@@ -5,6 +5,7 @@ export interface Post {
   likes: Likes[];
   author: Author;
   _id: string;
+  tags?: string[],
 }
 
 export type Likes = {
@@ -40,4 +41,3 @@ export type EditPost = {
   title: string;
   content: string;
 }
-

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   CircularProgress,
   IconButton,
+  Stack,
   Theme,
   Typography,
 } from '@mui/material';
@@ -11,6 +12,7 @@ import moment from 'moment';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import Chip from '@mui/material/Chip';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
@@ -38,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const Post = () => {
+export const Post: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const classes = useStyles();
   const { id } = useParams();
@@ -95,10 +97,18 @@ export const Post = () => {
           Author: {selectedPost?.author.firstName}{' '}
           {selectedPost?.author.lastName}
         </Typography>
+
         <Typography variant='body2'>
           Likes: {selectedPost.likes.length}
         </Typography>
       </div>
+      {selectedPost.tags && selectedPost.tags.length > 0 ? (
+        <Stack direction='row' spacing={1} marginBottom={1}>
+          {selectedPost.tags.map(tag => (
+            <Chip label={tag} />
+          ))}
+        </Stack>
+      ) : null}
       {editMode ? (
         <PostForm
           handleSubmitArticle={handleChangePost}

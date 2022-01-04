@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addLikePostById, addNewPost, deletePostByID, editPostById, getAllPosts, getPostById } from '../../api/posts';
+import { addLikePostById, addNewPost, deletePostByID, editPostById, getAllPosts, getAllPostsByTags, getPostById, getPostBySearchQuery, SearcQuery } from '../../api/posts';
 import { CreatedPost } from '../../types/initialTypes';
-import { EditPost } from './types';
 
 export const getPosts = createAsyncThunk(
   'posts/all',
@@ -27,6 +26,36 @@ export const getSelectedPost = createAsyncThunk(
       } = await getPostById(id);
 
       return post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const getPostsBySearch = createAsyncThunk(
+  'posts/search',
+  async (searchQuery: SearcQuery, { rejectWithValue }) => {
+    try {
+      const {
+        data: { posts },
+      } = await getPostBySearchQuery(searchQuery);
+
+      return posts;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const getPostsByTag = createAsyncThunk(
+  'posts/searchTag',
+  async (tag: string, { rejectWithValue }) => {
+    try {
+      const {
+        data: { posts },
+      } = await getAllPostsByTags(tag);
+
+      return posts;
     } catch (err) {
       rejectWithValue(err as Error);
     }
