@@ -1,14 +1,28 @@
-import axios from "axios";
-import { CreatedPost } from "../types/initialTypes";
+import { API } from '.';
+import { CreatedPost } from '../types/initialTypes';
 
-const API_LINK = '/api/posts';
+export type SearcQuery = {
+  search: string;
+  tags: string;
+}
 
-export const getAllPosts = () => axios.get(API_LINK);
+export const getAllPosts = () => API.get('/posts');
 
-export const getSelectedPost = (id: string) => axios.get(`${API_LINK}/${id}`);
+export const getAllPostsByTags = (ids: string) => API.get(`/posts/topics?tags=${ids}`);
 
-export const addNewPost = (post: CreatedPost) => axios.post(`${API_LINK}/new`, post);
+export const getPostById = (id: string) => API.get(`/posts/${id}`);
 
-export const deletePostByID = (id: string) => axios.delete(`${API_LINK}/delete/${id}`);
+export const getPostBySearchQuery = ({ search, tags }: SearcQuery) => API.get(`/posts/search?query=${search || 'none'}&tags=${tags}`);
 
-export const editPost = (id: string, post: CreatedPost ) => axios.put(`${API_LINK}/edit/${id}`, post);
+export const addNewPost = (post: CreatedPost) =>
+  API.post('/posts/new', post);
+
+export const deletePostByID = (id: string) =>
+  API.delete(`/posts/delete/${id}`);
+
+export const editPostById = (id: string, post: CreatedPost) =>
+  API.put(`/posts/edit/${id}`, post);
+
+export const addLikePostById = (id: string) =>
+  API.patch(`/posts/likes/${id}`);
+
