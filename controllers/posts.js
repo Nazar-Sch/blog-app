@@ -1,8 +1,6 @@
-const express = require("express");
-const mongoose = require("mongoose");
-
 const Posts = require("../models/Posts");
 const Tags = require("../models/Tags");
+const User = require("../models/User");
 
 const getAllPosts = async (req, res) => {
   try {
@@ -16,10 +14,10 @@ const getAllPosts = async (req, res) => {
 const getPostsByTags = async (req, res) => {
   try {
     const { tags } = req.query;
-    const postsIds = tags.split(',');
-    
+    const postsIds = tags.split(",");
+
     const posts = await Posts.find({
-      _id: { $in: postsIds }
+      _id: { $in: postsIds },
     });
 
     res.status(200).json({ posts });
@@ -54,6 +52,7 @@ const createPost = async (req, res) => {
       date: Date.now(),
       tags: tags,
       likes: [],
+      comments: [],
     });
 
     tags.map((tag) =>
@@ -73,6 +72,7 @@ const createPost = async (req, res) => {
 const getPostBuID = async (req, res) => {
   try {
     const post = await Posts.findById(req.params.id);
+
     res.status(200).json({ post });
   } catch (e) {
     res.status(500).json({ message: "Something went wrong. Try again." });
@@ -131,7 +131,7 @@ const updateLikes = async (req, res) => {
         .indexOf(req.user.user_id);
       post.likes.splice(removeIndex);
     } else {
-      post.likes.unshift({ user: req.user.user_id });
+      post.likes.push({ user: req.user.user_id });
     }
 
     await post.save();
@@ -144,6 +144,70 @@ const updateLikes = async (req, res) => {
   }
 };
 
+const createComment = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const { id } = req.params;
+    const post = await Posts.findById(id);
+    const user = await User.findById(req.user.user_id);
+
+    const comment = {
+      text,
+      likes: [],
+      author: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        id: req.user.user_id,
+      },
+      date: Date.now(),
+    };
+
+    post.comments.push(comment);
+
+    const updatedPost = await Posts.findByIdAndUpdate(id, post, { new: true });
+
+    res.status(200).json({ updatedPost });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { id, comment_id } = req.params;
+    const post = await Posts.findById(id);
+    const comment = post.comments.find(
+      ({ _id }) => _id.toString() === comment_id
+    );
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found!" });
+    }
+
+    if (comment.author.id !== req.user.user_id) {
+      return res.status(401).json({ error: "User not allowed remove comment" });
+    }
+
+    const removeIndex = post.comments
+      .map((comment) => comment.author.id.toString())
+      .indexOf(req.user.user_id);
+    post.comments.splice(removeIndex);
+
+    const updatedPost = await post.save();
+
+    res.status(200).json({ post: updatedPost });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
+  }
+};
+
+// Post ID: 61d229a45ec871b2d7777a30
+// User ID mmmm: 61d18027f9412d8ac57b1c06
+// Comment ID: 61d8b0d0bcfe15000d4d59f5
+
 module.exports = {
   getAllPosts,
   createPost,
@@ -153,4 +217,6 @@ module.exports = {
   updateLikes,
   getPostsBySearch,
   getPostsByTags,
+  createComment,
+  deleteComment,
 };

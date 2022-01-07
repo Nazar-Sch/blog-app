@@ -22,11 +22,11 @@ export const Posts = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const { isLoading, posts, error } = useAppSelector(state => state.postsReducer)
+  const { isLoading, posts } = useAppSelector(state => state.postsReducer)
 
   useEffect((() => {
     dispatch(getPosts());
-  }), [])
+  }), [dispatch])
 
   if (isLoading) {
     return (
@@ -37,8 +37,6 @@ export const Posts = () => {
   const clickOnLike = (id: string) => {
     dispatch(updateLikes(id));
   };
-
-  console.log('posts', posts);
 
   return (
     <div className={classes.root}>

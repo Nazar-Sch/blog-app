@@ -1,4 +1,5 @@
 import { API } from '.';
+import { NewComment } from '../store/posts/types';
 import { CreatedPost } from '../types/initialTypes';
 
 export type SearcQuery = {
@@ -25,4 +26,7 @@ export const editPostById = (id: string, post: CreatedPost) =>
 
 export const addLikePostById = (id: string) =>
   API.patch(`/posts/likes/${id}`);
+
+export const createComment = ({ id, text, author }: NewComment) =>
+  API.post(`/posts/comments/${id}`, { text, author });
 

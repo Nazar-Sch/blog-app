@@ -12,7 +12,7 @@ import {
   getPostsBySearch,
   getPostsByTag,
 } from './services';
-import { CreatedPost, EditPost, Post, PostsState } from './types';
+import { CreatedPost, Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
@@ -99,6 +99,8 @@ export const postsSlice = createSlice({
         likes: state.selectedPost?.likes || [],
         author: action.payload.author,
         _id: action.payload.id,
+        comments: state.selectedPost?.comments || [],
+        tags: state.selectedPost?.tags || [],
       };
 
       state.isLoading = false;

@@ -23,6 +23,7 @@ import {
 import { PostForm } from '../../components/Forms/PostForm';
 import { CreatedPost } from '../../types/initialTypes';
 import { deletePostByID, editPostById } from '../../api/posts';
+import { Comments } from '../../components/Comments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -141,6 +142,12 @@ export const Post: React.FC = () => {
             </Typography>
           </div>
           <Typography variant='body1'>{selectedPost?.content}</Typography>
+          <Typography variant='body1'>Comments:</Typography>
+          <Comments
+            comments={selectedPost.comments}
+            postId={selectedPost._id}
+            user={user}
+          />
         </>
       )}
     </div>
