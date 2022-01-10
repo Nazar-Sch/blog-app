@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Pagination as MuiPagination,
   PaginationItem,
@@ -7,11 +7,19 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { useStyles } from './styles';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getPosts } from '../../store/posts/services';
 
-export const Pagination = ({ page }: { page: number }) => {
-  const dispatch = useDispatch();
+interface PaginationProps {
+  page: string;
+}
 
-  const classes = useStyles();
+export const Pagination: React.FC<PaginationProps> = ({ page = '1' }) => {
+  const dispatch = useAppDispatch();
+
+  // useEffect((() => {
+  //   dispatch(getPosts(page));
+  // }), [dispatch]);
 
   return (
     <div>
@@ -22,7 +30,7 @@ export const Pagination = ({ page }: { page: number }) => {
           <PaginationItem
             {...item}
             component={Link}
-            to={`/posts?page=${1}`}
+            to={`/posts?page=${page}`}
           />
         )}
       />

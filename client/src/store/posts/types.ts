@@ -11,7 +11,7 @@ export interface Post {
 
 export type Comments = {
   text: string;
-  user: {
+  author: {
     firstName: string;
     lastName: string;
   };
@@ -35,6 +35,8 @@ export interface PostsState {
   selectedPost: Post | null;
   isLoading: boolean;
   error?: string;
+  currentPage?: number,
+  amountOfPages?: number,
 }
 
 export type CreatedPost = {

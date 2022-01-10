@@ -2,6 +2,23 @@ const Posts = require("../models/Posts");
 const Tags = require("../models/Tags");
 const User = require("../models/User");
 
+// const getAllPosts = async (req, res) => {
+//   const { page } = req.query;
+//   const LIMIT = 8;
+//   const startIdx = (Number(page) - 1) * LIMIT;
+
+//   const allDocs = await Posts.countDocuments();
+//   console.log(page);
+//   try {
+//     const posts = await Posts.find().sort({ _id: -1 }).limit(LIMIT).skip(startIdx);
+    
+//     res.status(200).json({ posts, currentPage: Number(page), amountOfPages: Math.ceil(allDocs/LIMIT) });
+//   } catch (error) {
+//     res.status(500).json({ message: "Something went wrong. Try again." });
+//   }
+// };
+
+
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Posts.find();

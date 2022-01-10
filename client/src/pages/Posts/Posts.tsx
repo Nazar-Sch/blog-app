@@ -6,6 +6,7 @@ import { Tags } from '../../components/Tags';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { getPosts, updateLikes } from '../../store/posts/services';
 import { Pagination } from '../../components/Pagination';
+import { useSearchQuery } from '../../utils/searchQuery';
 
 const useStyles = makeStyles({
   root: {
@@ -21,18 +22,19 @@ const useStyles = makeStyles({
 export const Posts = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const query = useSearchQuery();
+  const page = query.get('page') || '1';
 
-  const { isLoading, posts } = useAppSelector(state => state.postsReducer)
+  const { isLoading, posts } = useAppSelector(state => state.postsReducer);
 
-  useEffect((() => {
+  // if (isLoading) {
+  //   return (
+  //     <p>Loading...</p>
+  //   )
+  // }
+  useEffect(() => {
     dispatch(getPosts());
-  }), [dispatch])
-
-  if (isLoading) {
-    return (
-      <p>Loading...</p>
-    )
-  }
+  }, []);
 
   const clickOnLike = (id: string) => {
     dispatch(updateLikes(id));
@@ -43,10 +45,12 @@ export const Posts = () => {
       <div className={classes.articlesRoot}>
         {posts.length === 0 ? (
           <p>Empty list</p>
-        ) : posts.map(article => (
-          <Post article={article} clickOnLike={clickOnLike} />
-        ))}
-        <Pagination page={1} />
+        ) : (
+          posts.map(article => (
+            <Post article={article} clickOnLike={clickOnLike} />
+          ))
+        )}
+        <Pagination page={page} />
       </div>
       <Tags />
     </div>
