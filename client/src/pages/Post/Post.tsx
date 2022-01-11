@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
+  Button,
   CircularProgress,
   IconButton,
+  InputAdornment,
   Paper,
   Stack,
+  TextField,
   Theme,
   Typography,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
 import { makeStyles } from '@mui/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
@@ -15,10 +17,12 @@ import moment from 'moment';
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Chip from '@mui/material/Chip';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import PersonIcon from '@mui/icons-material/Person';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
@@ -26,13 +30,23 @@ import {
   getSelectedPost,
   deletePost,
   updateLikes,
+  addComment,
+  deleteComment,
+  likeComment,
+  editComment,
 } from '../../store/posts/services';
 import { PostForm } from '../../components/Forms/PostForm';
 import { CreatedPost } from '../../types/initialTypes';
-import { deletePostByID, editPostById } from '../../api/posts';
-import { Comments } from '../../components/Comments';
+import {
+  deletePostByID,
+  editCommentById,
+  editPostById,
+  updateCommentLike,
+} from '../../api/posts';
+import { Comments } from './containers/Comments';
 import { Comments as CommentsType } from '../../store/posts/types';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import { FavoriteOutlined } from '@mui/icons-material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -54,35 +68,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     maxWidth: 350,
   },
-  comment: {
-    boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
-    margin: theme.spacing(2, 0),
-    padding: theme.spacing(1, 2),
-    borderRadius: 15,
-    width: '100%',
-    display: 'grid',
-    gridTemplateAreas: `
-    'name date'
-    'body body'
-    'like dislike'
-    `,
-  },
-  commentName: {
-    gridArea: 'name',
-  },
-  commentDate: {
-    gridArea: 'date',
-    justifySelf: 'end',
-  },
-  commentBody: {
-    gridArea: 'body',
-  },
-  commentLike: {
-    gridArea: 'like',
-  },
-  commentDislike: {
-    gridArea: 'dislike',
-  },
 }));
 
 export const Post: React.FC = () => {
@@ -101,7 +86,7 @@ export const Post: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { isLoading, selectedPost, error } = useAppSelector(
+  const { isLoading, selectedPost } = useAppSelector(
     state => state.postsReducer
   );
   const { user } = useAppSelector(state => state.authReducer);
@@ -136,7 +121,7 @@ export const Post: React.FC = () => {
   };
 
   const handleChangePost = async (updatedPost: CreatedPost) => {
-    dispatch(editPost({ id: selectedPost._id, post: updatedPost }));
+    dispatch(editPost({ id: _id, post: updatedPost }));
     setEditMode(false);
   };
 
@@ -144,8 +129,8 @@ export const Post: React.FC = () => {
     <PostForm
       handleSubmitArticle={handleChangePost}
       initialValues={{
-        title: selectedPost?.title,
-        content: selectedPost.content,
+        title,
+        content,
         author: {
           id: user._id,
           firstName: user.firstName,
@@ -156,9 +141,6 @@ export const Post: React.FC = () => {
   );
 
   const handleClickLike = () => dispatch(updateLikes(_id));
-  const handleClickLikeComment = () => {
-    // dispatch like comment
-  };
 
   const handleClickComments = () => {
     setIsShowComments(!isShowComments);
@@ -166,27 +148,9 @@ export const Post: React.FC = () => {
 
   const handleSavePost = () => {
     // dispatch add to favourite with id
+
   };
 
-  const renderComment = (comment: CommentsType) => {
-    return (
-      <div className={classes.comment}>
-        <Typography variant='subtitle2' className={classes.commentName}>
-          {comment.author.firstName} {comment.author.lastName}
-        </Typography>
-        <Typography variant='caption' className={classes.commentDate} color='secondary'>
-          {moment(comment.date).startOf('hour').fromNow()}
-        </Typography>
-        <Typography variant='body1' className={classes.commentBody} marginTop={1} marginBottom={1}>{comment.text}</Typography>
-        <IconButton size='small' onClick={handleClickLikeComment} className={classes.commentLike}>
-          <ThumbUpAltIcon fontSize='small' />
-        </IconButton>
-        <IconButton size='small' onClick={handleClickLikeComment} className={classes.commentDislike}>
-          <ThumbDownAltIcon fontSize='small' />
-        </IconButton>
-      </div>
-    );
-  };
 
   const renderSideMenu = () => (
     <div className={classes.sideWrapper}>
@@ -202,7 +166,11 @@ export const Post: React.FC = () => {
         <BookmarkIcon />
       </IconButton>
       {isShowComments && (
-        <>{comments.map(comment => renderComment(comment))}</>
+        <Comments
+          user={user}
+          comments={comments}
+          selectedPost={selectedPost}
+        />
       )}
     </div>
   );
@@ -211,20 +179,20 @@ export const Post: React.FC = () => {
     <>
       <div className={classes.selectedPostWrapper}>
         <Typography variant='body1'>
-          Posted by {selectedPost?.author.firstName}{' '}
-          {selectedPost?.author.lastName}
+          Posted by {author.firstName}{' '}
+          {author.lastName}
         </Typography>
         <Typography variant='caption'>
-          {moment(selectedPost.date).format('LLL')}
+          {moment(date).format('LLL')}
         </Typography>
-        {selectedPost.tags && selectedPost.tags.length > 0 ? (
+        {tags && tags.length > 0 ? (
           <Stack
             direction='row'
             spacing={1}
             marginBottom={1}
             marginTop={1}
           >
-            {selectedPost.tags.map(tag => (
+            {tags.map(tag => (
               <Chip label={tag} />
             ))}
           </Stack>
@@ -234,7 +202,7 @@ export const Post: React.FC = () => {
             <IconButton onClick={handleEditMode}>
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => removePost(selectedPost?._id)}>
+            <IconButton onClick={() => removePost(_id)}>
               <DeleteOutlineIcon />
             </IconButton>
           </div>
@@ -245,15 +213,9 @@ export const Post: React.FC = () => {
           marginTop={3}
           marginBottom={1}
         >
-          {selectedPost?.title}
+          {title}
         </Typography>
-        <Typography variant='body1'>{selectedPost?.content}</Typography>
-        {/* <Typography variant='body1'>Comments:</Typography> */}
-        {/* <Comments
-          comments={selectedPost.comments}
-          postId={selectedPost._id}
-          user={user}
-        /> */}
+        <Typography variant='body1'>{content}</Typography>
       </div>
       {renderSideMenu()}
     </>

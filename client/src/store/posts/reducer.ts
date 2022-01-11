@@ -11,8 +11,11 @@ import {
   deletePost,
   getPostsBySearch,
   getPostsByTag,
+  addComment,
+  deleteComment,
+  likeComment,
 } from './services';
-import { CreatedPost, Post, PostsState } from './types';
+import { Comments, CreatedPost, NewComment, Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
@@ -138,6 +141,51 @@ export const postsSlice = createSlice({
       state.error = '';
     },
     [deletePost.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [addComment.fulfilled.type]: (
+      state,
+      action: PayloadAction<Post>
+    ) => {
+      state.isLoading = false;
+      state.error = '';
+      state.selectedPost = action.payload;
+    },
+    [addComment.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [deleteComment.fulfilled.type]: (
+      state,
+      action: PayloadAction<Post>
+    ) => {
+      state.isLoading = false;
+      state.error = '';
+      state.selectedPost = action.payload;
+    },
+    [deleteComment.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [likeComment.fulfilled.type]: (
+      state,
+      action: PayloadAction<Post>
+    ) => {
+      state.isLoading = false;
+      state.error = '';
+      state.selectedPost = action.payload;
+    },
+    [likeComment.rejected.type]: (
       state,
       action: PayloadAction<string>
     ) => {

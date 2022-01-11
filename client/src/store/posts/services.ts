@@ -3,16 +3,19 @@ import {
   addLikePostById,
   addNewPost,
   createComment,
+  deleteCommentById,
   deletePostByID,
+  editCommentById,
   editPostById,
   getAllPosts,
   getAllPostsByTags,
   getPostById,
   getPostBySearchQuery,
   SearcQuery,
+  updateCommentLike,
 } from '../../api/posts';
 import { CreatedPost } from '../../types/initialTypes';
-import { NewComment } from './types';
+import { CommentIds, EditComment, NewComment, Post } from './types';
 
 export const getPosts = createAsyncThunk(
   'posts/all',
@@ -144,15 +147,69 @@ export const deletePost = createAsyncThunk(
 export const addComment = createAsyncThunk(
   'posts/comments/add',
   async (
-    values:  NewComment,
+    values: NewComment,
     { rejectWithValue }
   ) => {
     try {
       const {
-        data: { comments },
+        data: { post },
       } = await createComment(values);
-      console.log(comments);
-      return comments;
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const deleteComment = createAsyncThunk(
+  'posts/comments/deletew',
+  async (
+    ids: CommentIds,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await deleteCommentById(ids);
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const likeComment = createAsyncThunk(
+  'posts/comments/like',
+  async (
+    ids: CommentIds,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await updateCommentLike(ids);
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const editComment = createAsyncThunk(
+  'posts/comments/like',
+  async (
+    value: EditComment,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await editCommentById(value);
+  
+      return post as Post;
     } catch (err) {
       rejectWithValue(err as Error);
     }

@@ -14,9 +14,11 @@ export type Comments = {
   author: {
     firstName: string;
     lastName: string;
+    id: string;
   };
   date: Date | string;
-  likes: Likes;
+  likes: Likes[];
+  _id: string;
 };
 
 export type Likes = {
@@ -55,3 +57,14 @@ export type NewComment = {
   text: string;
   author: { firstName: string; lastName: string };
 };
+
+export type CommentIds = {
+  postId: string;
+  commentId: string;
+}
+
+export type EditComment = {
+  postId: string;
+  commentId: string;
+  text: string;
+}

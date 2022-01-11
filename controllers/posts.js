@@ -11,13 +11,12 @@ const User = require("../models/User");
 //   console.log(page);
 //   try {
 //     const posts = await Posts.find().sort({ _id: -1 }).limit(LIMIT).skip(startIdx);
-    
+
 //     res.status(200).json({ posts, currentPage: Number(page), amountOfPages: Math.ceil(allDocs/LIMIT) });
 //   } catch (error) {
 //     res.status(500).json({ message: "Something went wrong. Try again." });
 //   }
 // };
-
 
 const getAllPosts = async (req, res) => {
   try {
@@ -183,7 +182,7 @@ const createComment = async (req, res) => {
 
     const updatedPost = await Posts.findByIdAndUpdate(id, post, { new: true });
 
-    res.status(200).json({ updatedPost });
+    res.status(200).json({ post: updatedPost });
   } catch (e) {
     return res
       .status(500)
@@ -194,25 +193,66 @@ const createComment = async (req, res) => {
 const deleteComment = async (req, res) => {
   try {
     const { id, comment_id } = req.params;
+    const post = await Posts.findByIdAndUpdate(
+      id,
+      {
+        $pull: { comments: { _id: comment_id } },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ post });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
+  }
+};
+
+const updateCommentLike = async (req, res) => {
+  try {
+    const { id, comment_id } = req.params;
     const post = await Posts.findById(id);
     const comment = post.comments.find(
       ({ _id }) => _id.toString() === comment_id
     );
-    if (!comment) {
-      return res.status(404).json({ error: "Comment not found!" });
-    }
 
-    if (comment.author.id !== req.user.user_id) {
-      return res.status(401).json({ error: "User not allowed remove comment" });
+    if (
+      comment.likes.filter((like) => like.user.toString() === req.user.user_id)
+        .length > 0
+    ) {
+      const removeIndex = post.likes
+        .map((like) => like.user.toString())
+        .indexOf(req.user.user_id);
+      comment.likes.splice(removeIndex, 1);
+    } else {
+      comment.likes.push({ user: req.user.user_id });
     }
-
-    const removeIndex = post.comments
-      .map((comment) => comment.author.id.toString())
-      .indexOf(req.user.user_id);
-    post.comments.splice(removeIndex);
 
     const updatedPost = await post.save();
 
+    res.status(200).json({ post: updatedPost });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
+  }
+};
+
+const editComment = async (req, res) => {
+  try {
+    const { id, comment_id } = req.params;
+    const { text } = req.body;
+
+    const post = await Posts.findById(id);
+    const comment = post.comments.find(
+      ({ _id }) => _id.toString() === comment_id
+    );
+
+    comment.text = text;
+    comment.date = Date.now();
+
+    const updatedPost = await post.save();
     res.status(200).json({ post: updatedPost });
   } catch (e) {
     return res
@@ -236,4 +276,6 @@ module.exports = {
   getPostsByTags,
   createComment,
   deleteComment,
+  updateCommentLike,
+  editComment,
 };
