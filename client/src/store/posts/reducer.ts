@@ -1,25 +1,15 @@
-import { CallToActionSharp } from '@mui/icons-material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import moment from 'moment';
 
 import {
-  getSelectedPost,
-  createNewPost,
   getPosts,
   updateLikes,
-  editPost,
-  deletePost,
   getPostsBySearch,
   getPostsByTag,
-  addComment,
-  deleteComment,
-  likeComment,
 } from './services';
-import { Comments, CreatedPost, NewComment, Post, PostsState } from './types';
+import { Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
-  selectedPost: null,
   error: '',
   isLoading: true,
 };
@@ -59,61 +49,6 @@ export const postsSlice = createSlice({
       state.error = action.payload;
       state.posts = [];
     },
-    [getSelectedPost.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = action.payload;
-    },
-    [getSelectedPost.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-      state.selectedPost = null;
-    },
-    [createNewPost.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = action.payload;
-    },
-    [createNewPost.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-      state.selectedPost = null;
-    },
-    [editPost.fulfilled.type]: (
-      state,
-      action: PayloadAction<CreatedPost>
-    ) => {
-      const updated = {
-        title: action.payload.title,
-        content: action.payload.content,
-        date: Date.now().toString(),
-        likes: state.selectedPost?.likes || [],
-        author: action.payload.author,
-        _id: action.payload.id,
-        comments: state.selectedPost?.comments || [],
-        tags: state.selectedPost?.tags || [],
-      };
-
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = updated;
-    },
-    [editPost.rejected.type]: (state, action: PayloadAction<string>) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
     [updateLikes.fulfilled.type]: (
       state,
       action: PayloadAction<{ id: string; likes: any[] }>
@@ -127,65 +62,6 @@ export const postsSlice = createSlice({
       );
     },
     [updateLikes.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [deletePost.fulfilled.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-    },
-    [deletePost.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [addComment.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = action.payload;
-    },
-    [addComment.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [deleteComment.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = action.payload;
-    },
-    [deleteComment.rejected.type]: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [likeComment.fulfilled.type]: (
-      state,
-      action: PayloadAction<Post>
-    ) => {
-      state.isLoading = false;
-      state.error = '';
-      state.selectedPost = action.payload;
-    },
-    [likeComment.rejected.type]: (
       state,
       action: PayloadAction<string>
     ) => {

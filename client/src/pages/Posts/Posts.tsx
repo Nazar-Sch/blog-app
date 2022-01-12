@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 
-import { Post } from '../../components/Post';
 import { Tags } from '../../components/Tags';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { getPosts, updateLikes } from '../../store/posts/services';
+import { getPosts } from '../../store/posts/services';
 import { Pagination } from '../../components/Pagination';
 import { useSearchQuery } from '../../utils/searchQuery';
+import { Loader } from '../../components/Loader';
+import { PostsList } from './containers/PostsList';
 
 const useStyles = makeStyles({
   root: {
@@ -25,34 +26,21 @@ export const Posts = () => {
   const query = useSearchQuery();
   const page = query.get('page') || '1';
 
-  const { isLoading, posts } = useAppSelector(state => state.postsReducer);
+  const { isLoading } = useAppSelector(state => state.postsReducer);
 
-  // if (isLoading) {
-  //   return (
-  //     <p>Loading...</p>
-  //   )
-  // }
   useEffect(() => {
     dispatch(getPosts());
-  }, []);
+  }, [dispatch]);
 
-  const clickOnLike = (id: string) => {
-    dispatch(updateLikes(id));
-  };
+  if (isLoading) return <Loader />;
 
   return (
-    <div className={classes.root}>
-      <div className={classes.articlesRoot}>
-        {posts.length === 0 ? (
-          <p>Empty list</p>
-        ) : (
-          posts.map(article => (
-            <Post article={article} clickOnLike={clickOnLike} />
-          ))
-        )}
-        <Pagination page={page} />
+    <>
+      <div className={classes.root}>
+        <PostsList />
+        <Tags />
       </div>
-      <Tags />
-    </div>
+      <Pagination page={page} />
+    </>
   );
 };

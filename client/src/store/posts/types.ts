@@ -1,3 +1,5 @@
+import { Tags } from "../tags/types";
+
 export interface Post {
   title: string;
   content: string;
@@ -32,9 +34,14 @@ export type Author = {
   lastName: string;
 };
 
+export interface PostState {
+  post: Post | null;
+  isLoading: boolean;
+  error?: string;
+}
+
 export interface PostsState {
   posts: Post[] | [];
-  selectedPost: Post | null;
   isLoading: boolean;
   error?: string;
   currentPage?: number,

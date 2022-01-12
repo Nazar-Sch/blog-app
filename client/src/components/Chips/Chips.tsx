@@ -2,8 +2,9 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
-import { IconButton, TextField } from '@mui/material';
+import { IconButton, TextField, Theme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { makeStyles } from '@mui/styles';
 
 export interface ChipData {
   key: string;
@@ -22,6 +23,21 @@ interface ChipsProps {
   handleChangeChipLabel: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2)
+  },
+  chipsWrapper: {
+    listStyle: 'none',
+    display: 'flex',
+    flexWrap: 'wrap',
+    maxWidth: 800,
+    marginTop: theme.spacing(2)
+  },
+}));
+
 export const Chips: React.FC<ChipsProps> = ({
   tags,
   tagLabel,
@@ -29,34 +45,28 @@ export const Chips: React.FC<ChipsProps> = ({
   handleAddChipts,
   handleChangeChipLabel,
 }) => {
+  const classes = useStyles();
+
   return (
-    <Paper
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        listStyle: 'none',
-        p: 0.5,
-        m: 0,
-      }}
-      component='ul'
-    >
-      {tags.map(data => {
-        return (
+    <>
+      <div className={classes.chipsWrapper}>
+        {tags.map(data => (
           <ListItem key={data.key}>
             <Chip label={data.label} onDelete={() => handleDelete(data)} />
           </ListItem>
-        );
-      })}
-      <TextField
-        onChange={handleChangeChipLabel}
-        value={tagLabel}
-        variant='standard'
-        placeholder='Type tags for search'
-      />
-      <IconButton onClick={handleAddChipts} disabled={!tagLabel.trim()}>
-        <AddIcon />
-      </IconButton>
-    </Paper>
+        ))}
+      </div>
+      <div className={classes.root}>
+        <TextField
+          onChange={handleChangeChipLabel}
+          value={tagLabel}
+          label='Add tags'
+          variant='standard'
+        />
+        <IconButton onClick={handleAddChipts} disabled={!tagLabel.trim()}>
+          <AddIcon />
+        </IconButton>
+      </div>
+    </>
   );
 };

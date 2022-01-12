@@ -1,58 +1,39 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Button,
   CircularProgress,
   IconButton,
-  InputAdornment,
-  Paper,
   Stack,
-  TextField,
   Theme,
   Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import moment from 'moment';
-import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Chip from '@mui/material/Chip';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
-import PersonIcon from '@mui/icons-material/Person';
-import ClearIcon from '@mui/icons-material/Clear';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   editPost,
   getSelectedPost,
   deletePost,
-  updateLikes,
-  addComment,
-  deleteComment,
-  likeComment,
-  editComment,
-} from '../../store/posts/services';
+} from '../../store/post/services';
 import { PostForm } from '../../components/Forms/PostForm';
 import { CreatedPost } from '../../types/initialTypes';
-import {
-  deletePostByID,
-  editCommentById,
-  editPostById,
-  updateCommentLike,
-} from '../../api/posts';
 import { Comments } from './containers/Comments';
-import { Comments as CommentsType } from '../../store/posts/types';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { FavoriteOutlined } from '@mui/icons-material';
+import { updateLikes } from '../../store/posts/services';
+import { SelectedPost } from './components/SelectedPost';
+import { Loader } from '../../components/Loader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     marginTop: theme.spacing(4),
     display: 'flex',
-    // justifyContent: 'space-between',
   },
   actionButtons: {
     justifySelf: 'end',
@@ -86,31 +67,24 @@ export const Post: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { isLoading, selectedPost } = useAppSelector(
-    state => state.postsReducer
-  );
+  const { isLoading, post } = useAppSelector(state => state.postReducer);
   const { user } = useAppSelector(state => state.authReducer);
 
-  if (!selectedPost) {
+  if (!post) {
     return null;
   }
 
-  const { author, _id, comments, content, title, date, likes, tags } =
-    selectedPost;
+  if (isLoading) return <Loader />;
 
-  if (isLoading) {
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
-  }
+  const { author, _id, comments, content, title, date, likes, tags } =
+    post;
+  const lastUpdatePost = moment(date).format('LLL');
 
   if (!user) {
     return <div>You are not allowed to create new post. Sign in!</div>;
   }
 
-  const isAuthorSelectedPost = selectedPost?.author.id === user?._id;
+  const isAuthorSelectedPost = author.id === user?._id;
 
   const handleEditMode = () => {
     setEditMode(!editMode);
@@ -125,21 +99,6 @@ export const Post: React.FC = () => {
     setEditMode(false);
   };
 
-  const renderEditMode = () => (
-    <PostForm
-      handleSubmitArticle={handleChangePost}
-      initialValues={{
-        title,
-        content,
-        author: {
-          id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        },
-      }}
-    />
-  );
-
   const handleClickLike = () => dispatch(updateLikes(_id));
 
   const handleClickComments = () => {
@@ -148,9 +107,7 @@ export const Post: React.FC = () => {
 
   const handleSavePost = () => {
     // dispatch add to favourite with id
-
   };
-
 
   const renderSideMenu = () => (
     <div className={classes.sideWrapper}>
@@ -166,64 +123,48 @@ export const Post: React.FC = () => {
         <BookmarkIcon />
       </IconButton>
       {isShowComments && (
-        <Comments
-          user={user}
-          comments={comments}
-          selectedPost={selectedPost}
-        />
+        <Comments user={user} comments={comments} selectedPost={post} />
       )}
     </div>
   );
 
-  const renderSelectedPost = () => (
-    <>
-      <div className={classes.selectedPostWrapper}>
-        <Typography variant='body1'>
-          Posted by {author.firstName}{' '}
-          {author.lastName}
-        </Typography>
-        <Typography variant='caption'>
-          {moment(date).format('LLL')}
-        </Typography>
-        {tags && tags.length > 0 ? (
-          <Stack
-            direction='row'
-            spacing={1}
-            marginBottom={1}
-            marginTop={1}
-          >
-            {tags.map(tag => (
-              <Chip label={tag} />
-            ))}
-          </Stack>
-        ) : null}
-        {isAuthorSelectedPost && (
-          <div className={classes.actionButtons}>
-            <IconButton onClick={handleEditMode}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => removePost(_id)}>
-              <DeleteOutlineIcon />
-            </IconButton>
-          </div>
-        )}
-        <Typography
-          variant='h5'
-          align='center'
-          marginTop={3}
-          marginBottom={1}
-        >
-          {title}
-        </Typography>
-        <Typography variant='body1'>{content}</Typography>
-      </div>
-      {renderSideMenu()}
-    </>
-  );
-
   return (
     <div className={classes.root}>
-      {editMode ? renderEditMode() : renderSelectedPost()}
+      {isAuthorSelectedPost && (
+        <div className={classes.actionButtons}>
+          <IconButton onClick={handleEditMode}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => removePost(_id)}>
+            <DeleteOutlineIcon />
+          </IconButton>
+        </div>
+      )}
+      {editMode ? (
+        <PostForm
+          handleSubmitArticle={handleChangePost}
+          initialValues={{
+            title,
+            content,
+            author: {
+              id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+            },
+          }}
+        />
+      ) : (
+        <>
+          <SelectedPost
+            author={author}
+            content={content}
+            lastUpdatePost={lastUpdatePost}
+            tags={tags}
+            title={title}
+          />
+          {renderSideMenu()}
+        </>
+      )}
     </div>
   );
 };
