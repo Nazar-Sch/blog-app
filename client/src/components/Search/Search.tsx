@@ -27,13 +27,6 @@ interface SearchProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    '& .MuiContainer-root': {
-      display: 'flex',
-      marginTop: theme.spacing(2),
-      alignItems: 'center',
-    },
-  },
 }));
 
 export const Search: React.FC<SearchProps> = ({
@@ -49,14 +42,12 @@ export const Search: React.FC<SearchProps> = ({
   handleAddChipts,
   handleChangeChipLabel,
 }) => {
-  const classes = useStyles();
-
   if (!open) {
     return null;
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       <Container>
         <TextField
           variant='standard'
@@ -80,7 +71,11 @@ export const Search: React.FC<SearchProps> = ({
           handleAddChipts={handleAddChipts}
           handleChangeChipLabel={handleChangeChipLabel}
         />
-        <Button variant='text' onClick={handleSearch}>
+        <Button
+          variant='outlined'
+          color='secondary'
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </Container>

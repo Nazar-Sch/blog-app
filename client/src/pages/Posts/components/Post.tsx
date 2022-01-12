@@ -8,11 +8,10 @@ import { Box, Paper, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import CommentIcon from '@mui/icons-material/Comment';
-import { Post as PostType } from '../../store/posts/types';
+import { Post as PostType } from '../../../store/posts/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  articleRoot: {
+  root: {
     marginBottom: theme.spacing(4),
     marginTop: theme.spacing(4),
     padding: theme.spacing(4),
@@ -61,27 +60,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface PostProps {
-  clickOnLike: (id: string) => void;
   article: PostType;
+  clickOnLike: (id: string) => void;
 }
 
 export const Post: React.FC<PostProps> = ({ article, clickOnLike }) => {
   const classes = useStyles();
-  const { date, title, content, _id, author, likes, comments } = article;
-  const navigate = useNavigate();
+  const { date, title, content, _id, author, likes } = article;
 
-  const clickOnSave = () => {
-    console.log('Save');
-  };
-
-  const handleClickOnLike = () => {
-    clickOnLike(_id);
-  };
-
-  // const handleClickOnComments = () => navigate(`/post${_id}`);
+  const handleClickOnLike = () => clickOnLike(_id);
 
   return (
-    <Paper elevation={0} className={classes.articleRoot}>
+    <div className={classes.root}>
       <Box alignItems='center' display='flex'>
         <AccountCircle />
         <Typography variant='caption' className={classes.name}>
@@ -97,20 +87,14 @@ export const Post: React.FC<PostProps> = ({ article, clickOnLike }) => {
           {content}
         </Typography>
       </Link>
-      <Box className={classes.btnGroup}>
-        {/* <IconButton size='small' onClick={clickOnSave} color='secondary'>
-          <BookmarkBorderIcon />
-        </IconButton> */}
-
-        <IconButton size='small'>
-          <CommentIcon />
-          {comments.length}
-        </IconButton>
-        <IconButton size='small' onClick={handleClickOnLike}>
-          <FavoriteIcon />
-          {likes.length}
-        </IconButton>
-      </Box>
-    </Paper>
+      <IconButton
+        size='small'
+        className={classes.btnGroup}
+        onClick={handleClickOnLike}
+      >
+        <FavoriteIcon />
+        {likes.length}
+      </IconButton>
+    </div>
   );
 };

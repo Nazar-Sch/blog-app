@@ -16,7 +16,7 @@ import {
   deleteComment,
   editComment,
   likeComment,
-} from '../../../store/posts/services';
+} from '../../../store/post/services';
 import { UserData } from '../../../store/auth/types';
 
 interface CommentsProps {

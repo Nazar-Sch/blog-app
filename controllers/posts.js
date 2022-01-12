@@ -122,9 +122,14 @@ const editPost = async (req, res) => {
     const { id } = req.params;
     const editedPost = req.body;
 
-    const post = await Posts.findByIdAndUpdate(id, editedPost, { new: true });
+    const post = await Posts.findByIdAndUpdate(
+      id,
+      { ...editedPost, date: Date.now() },
+      { new: true }
+    );
+
     if (!post) return res.status(404).json({ message: "Post not found" });
-    console.log(post);
+
     return res.status(200).json({ post });
   } catch (e) {
     return res

@@ -5,6 +5,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'grid',
     marginTop: theme.spacing(2),
+    width: '100%',
     '& .MuiButton-outlined': {
       justifySelf: 'center',
       fontSize: 14,

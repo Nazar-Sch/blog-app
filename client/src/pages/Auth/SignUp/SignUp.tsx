@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material';
 import { Formik, FormikProps, Form } from 'formik';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { Input } from '../../../components/Input';
 import { validationSignUp } from '../../../utils/validations';
 import { SignUpProps } from '../../../api/user';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { useAppDispatch } from '../../../store/hooks';
 import { signup } from '../../../store/auth/services';
 import { useStyles } from '../styles';
 
