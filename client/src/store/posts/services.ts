@@ -1,6 +1,21 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addLikePostById, addNewPost, deletePostByID, editPostById, getAllPosts, getAllPostsByTags, getPostById, getPostBySearchQuery, SearcQuery } from '../../api/posts';
+import {
+  addLikePostById,
+  addNewPost,
+  createComment,
+  deleteCommentById,
+  deletePostByID,
+  editCommentById,
+  editPostById,
+  getAllPosts,
+  getAllPostsByTags,
+  getPostById,
+  getPostBySearchQuery,
+  SearcQuery,
+  updateCommentLike,
+} from '../../api/posts';
 import { CreatedPost } from '../../types/initialTypes';
+import { CommentIds, EditComment, NewComment, Post } from './types';
 
 export const getPosts = createAsyncThunk(
   'posts/all',
@@ -64,7 +79,10 @@ export const getPostsByTag = createAsyncThunk(
 
 export const createNewPost = createAsyncThunk(
   'posts/new',
-  async ({ createdPost, cb}: { createdPost: CreatedPost, cb: VoidFunction }, { rejectWithValue }) => {
+  async (
+    { createdPost, cb }: { createdPost: CreatedPost; cb: VoidFunction },
+    { rejectWithValue }
+  ) => {
     try {
       const {
         data: { post },
@@ -81,11 +99,9 @@ export const updateLikes = createAsyncThunk(
   'posts/updateLike',
   async (id: string, { rejectWithValue }) => {
     try {
-      const {
-        data,
-      } = await addLikePostById(id);
+      const { data } = await addLikePostById(id);
 
-      return {id: data.id, likes: data.likes };
+      return { id: data.id, likes: data.likes };
     } catch (err) {
       rejectWithValue(err as Error);
     }
@@ -94,11 +110,12 @@ export const updateLikes = createAsyncThunk(
 
 export const editPost = createAsyncThunk(
   'posts/edit',
-  async ({ id, post }: { id: string, post: CreatedPost}, { rejectWithValue }) => {
+  async (
+    { id, post }: { id: string; post: CreatedPost },
+    { rejectWithValue }
+  ) => {
     try {
-      const {
-        data,
-      } = await editPostById(id, post);
+      const { data } = await editPostById(id, post);
       const updatedPost = { ...data.post, id };
       console.log('returned post to edit', updatedPost);
 
@@ -111,13 +128,88 @@ export const editPost = createAsyncThunk(
 
 export const deletePost = createAsyncThunk(
   'posts/delete',
-  async ({ id, cb }: { id: string, cb: VoidFunction}, { rejectWithValue }) => {
+  async (
+    { id, cb }: { id: string; cb: VoidFunction },
+    { rejectWithValue }
+  ) => {
     try {
       const {
         data: { message },
       } = await deletePostByID(id);
       cb();
       return message;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const addComment = createAsyncThunk(
+  'posts/comments/add',
+  async (
+    values: NewComment,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await createComment(values);
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const deleteComment = createAsyncThunk(
+  'posts/comments/deletew',
+  async (
+    ids: CommentIds,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await deleteCommentById(ids);
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const likeComment = createAsyncThunk(
+  'posts/comments/like',
+  async (
+    ids: CommentIds,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await updateCommentLike(ids);
+
+      return post as Post;
+    } catch (err) {
+      rejectWithValue(err as Error);
+    }
+  }
+);
+
+export const editComment = createAsyncThunk(
+  'posts/comments/like',
+  async (
+    value: EditComment,
+    { rejectWithValue }
+  ) => {
+    try {
+      const {
+        data: { post },
+      } = await editCommentById(value);
+  
+      return post as Post;
     } catch (err) {
       rejectWithValue(err as Error);
     }
