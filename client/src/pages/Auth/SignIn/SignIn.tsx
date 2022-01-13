@@ -32,7 +32,6 @@ export const SignIn = () => {
       {({
         values,
         handleChange,
-        handleSubmit,
         errors,
         touched,
         handleBlur,
@@ -76,7 +75,6 @@ export const SignIn = () => {
               onBlur={handleBlur}
             />
             <Button
-              onClick={handleSubmit}
               variant='outlined'
               type='submit'
               disabled={!dirty}
