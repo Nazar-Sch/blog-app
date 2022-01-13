@@ -37,7 +37,6 @@ export const SignUp = () => {
       {({
         values,
         handleChange,
-        handleSubmit,
         errors,
         touched,
         handleBlur,
@@ -96,7 +95,11 @@ export const SignUp = () => {
               error={errors.password && touched.password ? true : false}
               onBlur={handleBlur}
             />
-            <Button onClick={handleSubmit} variant='outlined' type='submit' disabled={!dirty}>
+            <Button
+              variant='outlined'
+              type='submit'
+              disabled={!dirty}
+            >
               Submit
             </Button>
             <Link to='/signin' className={classes.link}>
