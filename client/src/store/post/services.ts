@@ -18,10 +18,10 @@ export const getSelectedPost = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const {
-        data: { post },
+        data: { post, relatedTags },
       } = await getPostById(id);
 
-      return post;
+      return { ...post, tags: relatedTags};
     } catch (err) {
       rejectWithValue(err as Error);
     }

@@ -61,37 +61,62 @@ const createPost = async (req, res) => {
   try {
     const { title, content, author, tags } = req.body;
 
-    const newPost = new Posts({
+    const newPost = await new Posts({
       title: title,
       content: content,
       author: author,
       date: Date.now(),
-      tags: tags,
       likes: [],
       comments: [],
     });
 
-    tags.map((tag) =>
-      new Tags({
-        label: tag,
-        posts: newPost._id,
-      }).save()
-    );
+    const existedTags = await Tags.find({ label: { $in: tags } });
+
+    if (existedTags.length > 0) {
+      const addingPosts = [
+        ...existedTags.reduce((acc, item) => (acc = item.posts), []),
+        newPost._id,
+      ];
+
+      await Tags.updateMany(
+        { label: { $in: tags } },
+        { $set: { posts: addingPosts } },
+        );
+    }
+
+    const newTags = await Tags.create(
+      tags
+        .map((tag) => ({ label: tag, posts: newPost._id }))
+        .reduce((acc, tag) => (acc = tag), {}),
+      (err, res, next) => {
+        if (err) {
+          return;
+        }
+      })
 
     const savedPost = await newPost.save();
-    res.status(200).json({ post: savedPost });
+    return res.status(200).json({ post: savedPost });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong. Try again." });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
   }
 };
 
-const getPostBuID = async (req, res) => {
+const getPostByID = async (req, res) => {
   try {
-    const post = await Posts.findById(req.params.id);
+    const { id } = req.params;
+    const post = await Posts.findById(id);
+    const tags = await Tags.find({ posts: id });
 
-    res.status(200).json({ post });
+    const tagsResult = tags.reduce((acc, tag) => {
+      acc.push(tag.label);
+      return acc;
+    }, [])
+
+    return res.status(200).json({ post, relatedTags: tagsResult });
   } catch (e) {
-    res.status(500).json({ message: "Something went wrong. Try again." });
+    return res.status(500).json({ message: "Something went wrong. Try again." });
   }
 };
 
@@ -99,6 +124,9 @@ const deletePostById = async (req, res) => {
   try {
     const { id } = req.params;
     const post = await Posts.findById(id);
+
+    const tags = await Tags.find({ posts: id });
+
 
     if (req.user.user_id !== post.author.id) {
       return res
@@ -273,7 +301,7 @@ const editComment = async (req, res) => {
 module.exports = {
   getAllPosts,
   createPost,
-  getPostBuID,
+  getPostByID,
   deletePostById,
   editPost,
   updateLikes,

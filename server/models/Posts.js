@@ -23,7 +23,6 @@ const schema = new Schema({
       },
     },
   ],
-  tags: [String],
   comments: [
     {
       text: { type: String, required: true },

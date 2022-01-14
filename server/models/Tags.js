@@ -4,7 +4,6 @@ const tagsSchema = new Schema({
   label: {
     type: String,
     required: true,
-    unique: true,
   },
   posts: [
     {
