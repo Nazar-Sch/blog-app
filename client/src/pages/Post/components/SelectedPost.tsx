@@ -3,7 +3,6 @@ import { Typography, Stack, Chip, Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import { Author } from '../../../store/posts/types';
-import { Tags } from '../../../store/tags/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
