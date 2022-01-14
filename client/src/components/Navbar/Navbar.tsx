@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Box,
@@ -9,19 +9,19 @@ import {
   Menu,
   MenuItem,
   Theme,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { makeStyles } from '@mui/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import uniqid from 'uniqid';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/auth/reducer';
-import { useState } from 'react';
-import { Search } from '../Search';
 import { getPosts, getPostsBySearch } from '../../store/posts/services';
-import { ChipData } from '../Chips/Chips';
 import { useSearchQuery } from '../../utils/searchQuery';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,23 +55,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const Navbar: React.FC = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isOpenSearchBar, setIsOpenSearchBar] = useState(false);
   const query = useSearchQuery();
-  // const searchQuery = query.get('query');
-  // const searchTags = query.get('tags');
-  // const initialTagsLabels = searchTags?.split(',')
-  const [search, setSearch] = useState('');
-  const [tags, setTags] = useState<ChipData[]>([]);
-  const [tagLabel, setTagLabel] = useState<string>('');
+  const searchQuery = query.get('query');
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [search, setSearch] = useState(searchQuery || '');
 
   const classes = useStyles();
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector(state => state.authReducer);
-  const location = useLocation();
   const navigate = useNavigate();
-  const params = useParams();
-  const isPostsPage = location.pathname === '/posts';
+  const dispatch = useAppDispatch();
+
+  const { user } = useAppSelector(state => state.authReducer);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -89,11 +82,10 @@ export const Navbar: React.FC = () => {
     return null;
   }
 
-  const handleOpenSearchBar = () => setIsOpenSearchBar(!isOpenSearchBar);
-
   const handleClearSearchInput = () => {
     setSearch('');
     dispatch(getPosts());
+    navigate(`/posts`);
   };
 
   const handleChangeSearchInput = (e: any) => {
@@ -102,33 +94,13 @@ export const Navbar: React.FC = () => {
   };
 
   const handleSearchPost = () => {
-    if (search.trim() || tags.length > 0) {
-      const tagsLabels = tags.map(tag => tag.label).join(',')
-      dispatch(getPostsBySearch({ search, tags: tagsLabels}));
-      navigate(`/posts/search?query=${search || 'none'}&tags=${tagsLabels}`);
+    if (search.trim()) {
+      dispatch(getPostsBySearch({ search }));
+      navigate(`/posts/search?query=${search}`);
     } else {
       navigate('/');
     }
   };
-
-  const handleDeleteTag = (tagToRemove: ChipData) => {
-    console.log('tagToRemove', tagToRemove);
-    setTags(tags =>
-      tags.filter(tag => tag.key !== tagToRemove.key)
-    );
-  };
-
-  const handleAddTags = () => {
-    setTags(tags => ([...tags, { key: uniqid(), label: tagLabel }]));
-    setTagLabel('');
-  };
-
-  const handleChangeChipLabel = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setTagLabel(e.target.value);
-  };
-  
 
   return (
     <Box sx={{ flexGrow: 1 }} className={classes.root}>
@@ -138,14 +110,32 @@ export const Navbar: React.FC = () => {
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
               {user.firstName} {user.lastName}
             </Typography>
-            {isPostsPage && (
-              <IconButton
-                aria-label='search'
-                onClick={handleOpenSearchBar}
-              >
-                <SearchIcon />
-              </IconButton>
-            )}
+            <TextField
+              variant='standard'
+              size='small'
+              label='Search posts by title'
+              InputProps={
+                search.length > 0
+                  ? {
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton onClick={handleClearSearchInput}>
+                            <ClearIcon fontSize='small' />
+                          </IconButton>
+                          <IconButton
+                            aria-label='search'
+                            onClick={handleSearchPost}
+                          >
+                            <SearchIcon fontSize='small' />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }
+                  : undefined
+              }
+              onChange={handleChangeSearchInput}
+              value={search}
+            />
             <Link className={classes.link} to='/posts'>
               Posts
             </Link>
@@ -183,21 +173,6 @@ export const Navbar: React.FC = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      {isPostsPage && (
-        <Search
-          open={isOpenSearchBar}
-          handleClear={handleClearSearchInput}
-          handleChangeSearch={handleChangeSearchInput}
-          valueSearch={search}
-          handleSearch={handleSearchPost}
-          tags={tags}
-          tagLabel={tagLabel}
-          handleAddTags={handleAddTags}
-          handleDelete={handleDeleteTag}
-          handleAddChipts={handleAddTags}
-          handleChangeChipLabel={handleChangeChipLabel}
-        />
-      )}
     </Box>
   );
 };

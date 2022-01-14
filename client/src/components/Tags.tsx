@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Tags = () => {
   const [isShowClearButton, setIsShowButtonClear] = useState(false);
+  const [selectedTag, setSelectedTag] = useState('');
 
   const dispatch = useAppDispatch();
   const { tags, isLoading } = useAppSelector(state => state.tagsReducer);
@@ -36,22 +37,22 @@ export const Tags = () => {
     dispatch(getTags());
   }, [dispatch]);
 
-  const handleClick =
-    ({ posts }: TagsType) =>
-    async () => {
-      dispatch(getPostsByTag(posts.join(',')));
-      setIsShowButtonClear(true);
-    };
+  const handleClick = (tag: TagsType) => async () => {
+    setSelectedTag(tag.label);
+    dispatch(getPostsByTag(tag.posts.join(',')));
+    setIsShowButtonClear(true);
+  };
 
   const handleClearSearchByTags = () => {
     dispatch(getPosts());
     setIsShowButtonClear(false);
+    setSelectedTag('');
   };
 
   return (
     <div className={classes.root}>
       {isLoading ? (
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       ) : (
         <>
           <Typography variant='h6' gutterBottom>
@@ -66,6 +67,9 @@ export const Tags = () => {
             <>
               {tags.map(tag => (
                 <Chip
+                  variant={
+                    selectedTag === tag.label ? 'filled' : 'outlined'
+                  }
                   component={'button'}
                   label={tag.label}
                   clickable
