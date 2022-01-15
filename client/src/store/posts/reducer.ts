@@ -6,12 +6,14 @@ import {
   getPostsBySearch,
   getPostsByTag,
 } from './services';
-import { Post, PostsState } from './types';
+import { PaginationsPages, Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
   error: '',
   isLoading: true,
+  currentPage: 0,
+  amountOfPages: 0,
 };
 
 export const postsSlice = createSlice({
@@ -19,32 +21,49 @@ export const postsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [getPosts.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
+    [getPosts.fulfilled.type]: (state, action: PayloadAction<{ posts: Post[], currentPage: number, amountOfPages: number }>) => {
+      console.log(action.payload)
       state.isLoading = false;
       state.error = '';
-      state.posts = action.payload;
+      state.posts = action.payload.posts;
+      state.currentPage = action.payload.currentPage;
+      state.amountOfPages = action.payload.amountOfPages;
     },
     [getPosts.rejected.type]: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
       state.posts = [];
+      state.currentPage = 0;
+      state.amountOfPages = 0;
     },
-    [getPostsBySearch.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
+    [getPostsBySearch.fulfilled.type]: (
+      state,
+      action: PayloadAction<Post[]>
+    ) => {
       state.isLoading = false;
       state.error = '';
       state.posts = action.payload;
     },
-    [getPostsBySearch.rejected.type]: (state, action: PayloadAction<string>) => {
+    [getPostsBySearch.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
       state.isLoading = false;
       state.error = action.payload;
       state.posts = [];
     },
-    [getPostsByTag.fulfilled.type]: (state, action: PayloadAction<Post[]>) => {
+    [getPostsByTag.fulfilled.type]: (
+      state,
+      action: PayloadAction<Post[]>
+    ) => {
       state.isLoading = false;
       state.error = '';
       state.posts = action.payload;
     },
-    [getPostsByTag.rejected.type]: (state, action: PayloadAction<string>) => {
+    [getPostsByTag.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
       state.isLoading = false;
       state.error = action.payload;
       state.posts = [];

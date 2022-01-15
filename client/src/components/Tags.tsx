@@ -31,6 +31,7 @@ export const Tags = () => {
 
   const dispatch = useAppDispatch();
   const { tags, isLoading } = useAppSelector(state => state.tagsReducer);
+  const { currentPage } = useAppSelector(state => state.postsReducer);
   const classes = useStyles();
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export const Tags = () => {
   };
 
   const handleClearSearchByTags = () => {
-    dispatch(getPosts());
+    dispatch(getPosts(currentPage || 1));
     setIsShowButtonClear(false);
     setSelectedTag('');
   };

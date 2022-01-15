@@ -17,12 +17,11 @@ import ClearIcon from '@mui/icons-material/Clear';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { makeStyles } from '@mui/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/auth/reducer';
 import { getPosts, getPostsBySearch } from '../../store/posts/services';
-import { useSearchQuery } from '../../utils/searchQuery';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -55,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const Navbar: React.FC = () => {
-  const query = useSearchQuery();
+  const [query] = useSearchParams();
   const searchQuery = query.get('query');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [search, setSearch] = useState(searchQuery || '');
@@ -65,6 +64,7 @@ export const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { user } = useAppSelector(state => state.authReducer);
+  const { currentPage } = useAppSelector(state => state.postsReducer);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
 
   const handleClearSearchInput = () => {
     setSearch('');
-    dispatch(getPosts());
+    dispatch(getPosts(currentPage || 1));
     navigate(`/posts`);
   };
 

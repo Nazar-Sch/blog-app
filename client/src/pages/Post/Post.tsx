@@ -110,10 +110,6 @@ export const Post: React.FC = () => {
     setIsShowComments(!isShowComments);
   };
 
-  const handleSavePost = () => {
-    // dispatch add to favourite with id
-  };
-
   const renderSideMenu = () => (
     <div className={classes.sideWrapper}>
       <IconButton onClick={handleClickLike}>
@@ -123,9 +119,6 @@ export const Post: React.FC = () => {
       <IconButton onClick={handleClickComments}>
         <ChatBubbleIcon />
         {comments.length}
-      </IconButton>
-      <IconButton onClick={handleSavePost}>
-        <BookmarkIcon />
       </IconButton>
       {isShowComments && (
         <Comments user={user} comments={comments} selectedPost={post} />
