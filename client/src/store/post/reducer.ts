@@ -9,7 +9,8 @@ import {
   deleteComment,
   likeComment,
 } from './services';
-import { CreatedPost, Post, PostState } from '../posts/types';
+import { CreatedPost, Likes, Post, PostState } from '../posts/types';
+import { updateLikes } from '../posts/services';
 
 export const initialState: PostState = {
   post: null,
@@ -139,6 +140,21 @@ export const postSlice = createSlice({
       state.post = action.payload;
     },
     [likeComment.rejected.type]: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [updateLikes.fulfilled.type]: (state, action: PayloadAction<{ id: string; likes: Likes[] }>) => {
+      console.log(action.payload);
+      state.isLoading = false;
+      state.error = '';
+      if (state.post) {
+        state.post.likes = action.payload.likes;
+      }
+    },
+    [updateLikes.rejected.type]: (
       state,
       action: PayloadAction<string>
     ) => {

@@ -6,7 +6,7 @@ import {
   getPostsBySearch,
   getPostsByTag,
 } from './services';
-import { Post, PostsState } from './types';
+import { Likes, Post, PostsState } from './types';
 
 export const initialState: PostsState = {
   posts: [],
@@ -51,7 +51,7 @@ export const postsSlice = createSlice({
     },
     [updateLikes.fulfilled.type]: (
       state,
-      action: PayloadAction<{ id: string; likes: any[] }>
+      action: PayloadAction<{ id: string; likes: Likes[] }>
     ) => {
       state.isLoading = false;
       state.error = '';
