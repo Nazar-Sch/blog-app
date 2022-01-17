@@ -9,13 +9,13 @@ import {
 
 export const getPosts = createAsyncThunk(
   'posts/all',
-  async (_, { rejectWithValue }) => {
+  async (page: string | number, { rejectWithValue }) => {
     try {
       const {
-        data: { posts },
-      } = await getAllPosts();
+        data: { posts, currentPage, amountOfPages },
+      } = await getAllPosts(page.toString());
 
-      return posts;
+      return { posts, currentPage, amountOfPages };
     } catch (err) {
       rejectWithValue(err as Error);
     }

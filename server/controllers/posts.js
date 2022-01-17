@@ -19,9 +19,24 @@ const User = require("../models/User");
 // };
 
 const getAllPosts = async (req, res) => {
+  const { page } = req.query;
   try {
-    const posts = await Posts.find();
-    res.status(200).json({ posts });
+    const LIMIT = 8;
+    const startIdx = (Number(page) - 1) * LIMIT;
+
+    const allDocs = await Posts.countDocuments();
+
+    const posts = await Posts.find()
+      .sort({ date: -1 })
+      .limit(LIMIT)
+      .skip(startIdx);
+    res
+      .status(200)
+      .json({
+        posts,
+        currentPage: Number(page),
+        amountOfPages: Math.ceil(allDocs / LIMIT),
+      });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong. Try again." });
   }
@@ -53,7 +68,9 @@ const getPostsBySearch = async (req, res) => {
     // });
     return res.status(200).json({ posts });
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong. Try again." });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
   }
 };
 
@@ -80,8 +97,8 @@ const createPost = async (req, res) => {
 
       await Tags.updateMany(
         { label: { $in: tags } },
-        { $set: { posts: addingPosts } },
-        );
+        { $set: { posts: addingPosts } }
+      );
     }
 
     const newTags = await Tags.create(
@@ -92,7 +109,8 @@ const createPost = async (req, res) => {
         if (err) {
           return;
         }
-      })
+      }
+    );
 
     const savedPost = await newPost.save();
     return res.status(200).json({ post: savedPost });
@@ -112,11 +130,13 @@ const getPostByID = async (req, res) => {
     const tagsResult = tags.reduce((acc, tag) => {
       acc.push(tag.label);
       return acc;
-    }, [])
+    }, []);
 
     return res.status(200).json({ post, relatedTags: tagsResult });
   } catch (e) {
-    return res.status(500).json({ message: "Something went wrong. Try again." });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong. Try again." });
   }
 };
 
@@ -126,7 +146,6 @@ const deletePostById = async (req, res) => {
     const post = await Posts.findById(id);
 
     const tags = await Tags.find({ posts: id });
-
 
     if (req.user.user_id !== post.author.id) {
       return res

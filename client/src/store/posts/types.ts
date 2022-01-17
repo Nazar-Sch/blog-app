@@ -11,6 +11,11 @@ export interface Post {
   comments: Comments[];
 }
 
+export type PaginationsPages = {
+  currentPage: number,
+  amountOfPages: number,
+}
+
 export type Comments = {
   text: string;
   author: {

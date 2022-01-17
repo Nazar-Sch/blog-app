@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
 import moment from 'moment';
 import { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { Box, Paper, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+
 import { Post as PostType } from '../../../store/posts/types';
 
 const useStyles = makeStyles((theme: Theme) => ({

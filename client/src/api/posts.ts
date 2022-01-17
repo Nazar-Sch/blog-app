@@ -7,7 +7,7 @@ export type SearcQuery = {
   tags?: string;
 }
 
-export const getAllPosts = () => API.get('/posts');
+export const getAllPosts = (page: string) => API.get(`/posts?page=${page}`);
 
 export const getAllPostsByTags = (ids: string) => API.get(`/posts/topics?tags=${ids}`);
 
