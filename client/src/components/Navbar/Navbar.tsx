@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -6,18 +7,15 @@ import {
   Typography,
   IconButton,
   Container,
-  Menu,
-  MenuItem,
   Theme,
   InputAdornment,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { makeStyles } from '@mui/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logout } from '../../store/auth/reducer';
@@ -56,7 +54,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const Navbar: React.FC = () => {
   const [query] = useSearchParams();
   const searchQuery = query.get('query');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [search, setSearch] = useState(searchQuery || '');
 
   const classes = useStyles();
@@ -65,14 +62,6 @@ export const Navbar: React.FC = () => {
 
   const { user } = useAppSelector(state => state.authReducer);
   const { currentPage } = useAppSelector(state => state.postsReducer);
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const logOut = () => {
     dispatch(logout());
@@ -142,34 +131,11 @@ export const Navbar: React.FC = () => {
             <Link className={classes.link} to='/new-story'>
               Write a story
             </Link>
-            <IconButton
-              size='large'
-              aria-label='account of current user'
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
-              onClick={handleMenu}
-              color='inherit'
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id='menu-appbar'
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={logOut}>Sign out</MenuItem>
-            </Menu>
+            <Tooltip title='Logout'>
+              <IconButton onClick={logOut}>
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
           </Toolbar>
         </Container>
       </AppBar>

@@ -27,10 +27,10 @@ export const getPostsBySearch = createAsyncThunk(
   async (searchQuery: SearcQuery, { rejectWithValue }) => {
     try {
       const {
-        data: { posts },
+        data: { posts, amountOfPages },
       } = await getPostBySearchQuery(searchQuery);
 
-      return posts;
+      return { posts, amountOfPages };
     } catch (err) {
       rejectWithValue(err as Error);
     }
@@ -39,13 +39,13 @@ export const getPostsBySearch = createAsyncThunk(
 
 export const getPostsByTag = createAsyncThunk(
   'posts/searchTag',
-  async (tag: string, { rejectWithValue }) => {
+  async (tags: string, { rejectWithValue }) => {
     try {
       const {
-        data: { posts },
-      } = await getAllPostsByTags(tag);
+        data: { posts, amountOfPages },
+      } = await getAllPostsByTags(tags);
 
-      return posts;
+      return { posts, amountOfPages };
     } catch (err) {
       rejectWithValue(err as Error);
     }

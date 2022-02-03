@@ -1,22 +1,7 @@
-const Posts = require("../models/Posts");
-const Tags = require("../models/Tags");
-const User = require("../models/User");
+const Posts = require('../models/Posts');
+const Tags = require('../models/Tags');
+const User = require('../models/User');
 
-// const getAllPosts = async (req, res) => {
-//   const { page } = req.query;
-//   const LIMIT = 8;
-//   const startIdx = (Number(page) - 1) * LIMIT;
-
-//   const allDocs = await Posts.countDocuments();
-//   console.log(page);
-//   try {
-//     const posts = await Posts.find().sort({ _id: -1 }).limit(LIMIT).skip(startIdx);
-
-//     res.status(200).json({ posts, currentPage: Number(page), amountOfPages: Math.ceil(allDocs/LIMIT) });
-//   } catch (error) {
-//     res.status(500).json({ message: "Something went wrong. Try again." });
-//   }
-// };
 
 const getAllPosts = async (req, res) => {
   const { page } = req.query;
@@ -30,47 +15,63 @@ const getAllPosts = async (req, res) => {
       .sort({ date: -1 })
       .limit(LIMIT)
       .skip(startIdx);
-    res
-      .status(200)
-      .json({
-        posts,
-        currentPage: Number(page),
-        amountOfPages: Math.ceil(allDocs / LIMIT),
-      });
+
+    res.status(200).json({
+      posts,
+      currentPage: Number(page),
+      amountOfPages: Math.ceil(allDocs / LIMIT),
+    });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong. Try again." });
+    res.status(500).json({ message: 'Something went wrong. Try again.' });
   }
 };
 
 const getPostsByTags = async (req, res) => {
   try {
+    const LIMIT = 8;
+
     const { tags } = req.query;
-    const postsIds = tags.split(",");
+    const postsIds = tags.split(',');
 
-    const posts = await Posts.find({
+    const searchInDocs = {
       _id: { $in: postsIds },
-    });
+    }
 
-    res.status(200).json({ posts });
+    const allDocs = await Posts.countDocuments(searchInDocs);
+
+    const posts = await Posts.find(searchInDocs)
+      .sort({ date: -1 })
+      .limit(LIMIT)
+
+    res.status(200).json({
+      posts,
+      amountOfPages: Math.ceil(allDocs / LIMIT),
+    });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong. Try again." });
+    res.status(500).json({ message: 'Something went wrong. Try again.' });
   }
 };
 
 const getPostsBySearch = async (req, res) => {
   try {
-    const { query, tags } = req.query;
-    const title = new RegExp(query, "i");
+    const { query } = req.query;
+    const title = new RegExp(query, 'i');
+    const LIMIT = 8;
 
-    const posts = await Posts.find({ title });
-    // const posts = await Posts.find({
-    //   $or: [{ title }, { tags: { $in: tags.split(",") } }],
-    // });
-    return res.status(200).json({ posts });
+    const allDocs = await Posts.countDocuments({ title });
+
+    const posts = await Posts.find({ title })
+      .sort({ date: -1 })
+      .limit(LIMIT)
+
+    return res.status(200).json({
+      posts,
+      amountOfPages: Math.ceil(allDocs / LIMIT),
+    });
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -117,7 +118,7 @@ const createPost = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -136,7 +137,7 @@ const getPostByID = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -150,17 +151,17 @@ const deletePostById = async (req, res) => {
     if (req.user.user_id !== post.author.id) {
       return res
         .status(401)
-        .json({ message: "You are not allowd delete this post" });
+        .json({ message: 'You are not allowd delete this post' });
     }
 
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
     await post.remove();
-    return res.status(200).json({ message: "Post deleted Successfully" });
+    return res.status(200).json({ message: 'Post deleted Successfully' });
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -175,13 +176,13 @@ const editPost = async (req, res) => {
       { new: true }
     );
 
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
     return res.status(200).json({ post });
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -208,7 +209,7 @@ const updateLikes = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -238,7 +239,7 @@ const createComment = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -257,7 +258,7 @@ const deleteComment = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -287,7 +288,7 @@ const updateCommentLike = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 
@@ -309,7 +310,7 @@ const editComment = async (req, res) => {
   } catch (e) {
     return res
       .status(500)
-      .json({ message: "Something went wrong. Try again." });
+      .json({ message: 'Something went wrong. Try again.' });
   }
 };
 

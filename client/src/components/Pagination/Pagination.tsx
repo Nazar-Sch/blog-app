@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Pagination as MuiPagination,
   PaginationItem,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { getPosts } from '../../store/posts/services';
@@ -25,7 +25,7 @@ export const Pagination: React.FC<PaginationProps> = ({ page }) => {
   return (
     <div>
       <MuiPagination
-        page={Number(page)}
+        page={Number(page) || 1}
         count={amountOfPages}
         color='secondary'
         renderItem={item => (
