@@ -21,8 +21,15 @@ export const postsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [getPosts.fulfilled.type]: (state, action: PayloadAction<{ posts: Post[], currentPage: number, amountOfPages: number }>) => {
-      console.log(action.payload)
+    [getPosts.fulfilled.type]: (
+      state,
+      action: PayloadAction<{
+        posts: Post[];
+        currentPage: number;
+        amountOfPages: number;
+      }>
+    ) => {
+      console.log(action.payload);
       state.isLoading = false;
       state.error = '';
       state.posts = action.payload.posts;
@@ -38,11 +45,15 @@ export const postsSlice = createSlice({
     },
     [getPostsBySearch.fulfilled.type]: (
       state,
-      action: PayloadAction<Post[]>
+      action: PayloadAction<{
+        posts: Post[];
+        amountOfPages: number;
+      }>
     ) => {
       state.isLoading = false;
       state.error = '';
-      state.posts = action.payload;
+      state.posts = action.payload.posts;
+      state.amountOfPages = action.payload.amountOfPages;
     },
     [getPostsBySearch.rejected.type]: (
       state,
@@ -54,11 +65,15 @@ export const postsSlice = createSlice({
     },
     [getPostsByTag.fulfilled.type]: (
       state,
-      action: PayloadAction<Post[]>
+      action: PayloadAction<{
+        posts: Post[];
+        amountOfPages: number;
+      }>
     ) => {
       state.isLoading = false;
       state.error = '';
-      state.posts = action.payload;
+      state.posts = action.payload.posts;
+      state.amountOfPages = action.payload.amountOfPages;
     },
     [getPostsByTag.rejected.type]: (
       state,

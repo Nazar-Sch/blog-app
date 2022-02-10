@@ -13,7 +13,6 @@ export const getAllPostsByTags = (ids: string) => API.get(`/posts/topics?tags=${
 
 export const getPostById = (id: string) => API.get(`/posts/${id}`);
 
-// export const getPostBySearchQuery = ({ search, tags }: SearcQuery) => API.get(`/posts/search?query=${search || 'none'}&tags=${tags}`);
 export const getPostBySearchQuery = ({ search, tags }: SearcQuery) => API.get(`/posts/search?query=${search}`);
 
 export const addNewPost = (post: CreatedPost) =>
