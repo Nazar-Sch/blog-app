@@ -1,5 +1,3 @@
-import { Tags } from "../tags/types";
-
 export interface Post {
   title: string;
   content: string;

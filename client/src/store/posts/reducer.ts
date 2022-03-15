@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import {
   getPosts,
@@ -29,7 +29,6 @@ export const postsSlice = createSlice({
         amountOfPages: number;
       }>
     ) => {
-      console.log(action.payload);
       state.isLoading = false;
       state.error = '';
       state.posts = action.payload.posts;
